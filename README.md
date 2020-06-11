@@ -1,4 +1,4 @@
-# PanicSystem - BARELY MAINTAINED.  CODE NOT COMPILED TO NEXUS YMMV
+# PanicSystem
 Forked from RealityMachina's fork (https://github.com/RealityMachina/Basic-Panic-System) of mpstark's PunchinOut mod (https://github.com/Mpstark/PunchinOut).
 
 Design improvements by don Zappo, balancing and testing by ganimal, and coding by gnivler.
@@ -6,6 +6,8 @@ Design improvements by don Zappo, balancing and testing by ganimal, and coding b
 Huge thanks to JetBrains for supporting this project and OSS development.  
 <a href="https://jetbrains.com"><img src="jetbrains-variant-4.png" width="10%" height="10%"></a><a href="https://www.jetbrains.com/rider"><img src="logo.png" width="5%" height="5%"></a>
 Coded using JetBrains Rider IDE.
+
+:information_source: No longer maintained by @gnivler, now maintained by @battletechmodders. In paticular @LokiAz9 and @IceRaptor have contributed since 4.0.0.
 
 ## Installation
 
