@@ -9,6 +9,7 @@ namespace PanicSystem
         public bool AlwaysPanic = false;
         public bool Debug;
         public bool CombatLog;
+        public bool CombatSaves;
         public bool EnableEjectPhrases;
         public bool FloatieSpam;
         public float EjectPhraseChance;
@@ -61,6 +62,8 @@ namespace PanicSystem
         public float OverheatedModifier;
         public float ShutdownModifier;
         public float HeatDamageFactor;
+        public float VehicleDamageFactor;
+        public float ArmorDamageThreshold;
         public float MechHealthForCrit;
         public float CritOver;
         public float UnsettledPanicFactor;
