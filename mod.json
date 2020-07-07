@@ -6,7 +6,7 @@
   "Website": "https://github.com/BattletechModders/PanicSystem",
   "DLL": "PanicSystem.dll",
   "DLLEntryPoint": "PanicSystem.PanicSystem.Init",
-
+  "OptionallyDependsOn" : [ "Custom Ammo Categories" ],
   "Manifest": [
     {
       "Type": "SVGAsset",
