@@ -40,16 +40,13 @@ namespace PanicSystem
                     modSettings = new Settings();
                 }
 
-                // thank you Frosty IRBTModUtils CustomDialog
-                // https://github.com/IceRaptor/IRBTModUtils
-                // Try to determine the battletech directory
+                // Determine the BT directory, and read the HBS callsigns to use in CustomDialogs
+                //   See https://github.com/IceRaptor/IRBTModUtils for original source.
                 string fileName = Process.GetCurrentProcess().MainModule.FileName;
                 string btDir = Path.GetDirectoryName(fileName);
-                //LogDebug($"BT File is: {fileName} with btDir: {btDir}");
                 if (Coordinator.CallSigns == null)
                 {
                     string filePath = Path.Combine(btDir, modSettings.Dialogue.CallsignsPath);
-                    //LogDebug($"Reading files from {filePath}");
                     try
                     {
                         Coordinator.CallSigns = File.ReadAllLines(filePath).ToList();
@@ -60,7 +57,6 @@ namespace PanicSystem
                         LogDebug(e);
                         Coordinator.CallSigns = new List<string> { "Alpha", "Beta", "Gamma" };
                     }
-                    //LogDebug($"Callsign count is: {Coordinator.CallSigns.Count}");
                 }
 
                 harmony.PatchAll();
