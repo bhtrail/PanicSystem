@@ -50,11 +50,6 @@ namespace PanicSystem.Components
                     LogError($"MechCombatStats Type is null");
                 }
 
-                foreach (var type in typeof(CombatProcessor).GetNestedTypes(AccessTools.all))
-                {
-                    LogError($"Nested type: {type.FullName}\n");
-                }
-
                 playerMechStatsType = typeof(Dictionary<,>).MakeGenericType(typeof(string), mechCombatStatsType);
 
                 tryGetValue = playerMechStatsType.GetMethod("TryGetValue", AccessTools.all);
