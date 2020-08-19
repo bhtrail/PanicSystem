@@ -362,6 +362,18 @@ namespace PanicSystem.Components
         {
             LogReport("Panic save failure requires eject save");
 
+            try
+            {
+                if(actor.IsPilotable && actor.GetPilot()!=null && actor.GetPilot().CanEject == false)
+                {
+                    LogReport("Pilot CanEject returned false");
+                    return true;
+                }
+            }catch(Exception ex)
+            {
+                LogDebug(ex);
+            }
+
             var pilotTracker = TrackedActors.First(tracker => tracker.Guid == actor.GUID);
             if (pilotTracker.PreventEjection)
             {
