@@ -21,7 +21,7 @@ namespace PanicSystem.Components
         private static AbstractActor attacker=null;
         internal static void newTurnFor(AbstractActor actor)
         {
-            //LogActor(actor);
+            LogActor(actor,false);
             if (actor != attacker)
             {
                 LogReport($"new Turn Activation for {actor.Nickname} - {actor.DisplayName} - {actor.GUID}");

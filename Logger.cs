@@ -49,14 +49,14 @@ namespace PanicSystem
         }
 
         private static List<string> loggedactors = new List<string>();
-        internal static void LogActor(AbstractActor actor)
+        internal static void LogActor(AbstractActor actor,bool force)
         {
             try
             {
                 if (modSettings.CombatLog)
                 {
 
-                    if (loggedactors.Contains(actor.GUID))
+                    if (!force && loggedactors.Contains(actor.GUID))
                     {
                         return;
                     }

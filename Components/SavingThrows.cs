@@ -368,6 +368,7 @@ namespace PanicSystem.Components
                 {
                     //Not using actor.GetPilot().CanEject as the pilot_cannot_eject is set by a lot of pilotdefs
                     LogReport("Pilot CanEject Stat false");
+                    LogActor(actor,true);
                     return true;
                 }
             }catch(Exception ex)
