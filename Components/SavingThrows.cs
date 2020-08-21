@@ -362,6 +362,28 @@ namespace PanicSystem.Components
         {
             LogReport("Panic save failure requires eject save");
 
+            try
+            {
+                if(actor.IsPilotable && actor.GetPilot()!=null && actor.GetPilot().StatCollection.GetValue<bool>("CanEject") == false)
+                {
+                    LogReport($"Pilot CanEject Stat false - {(modSettings.ObeyPilotCanEjectStat ? "":"NOT")} obeying");
+                    LogActor(actor,true);
+                    if(modSettings.ObeyPilotCanEjectStat)
+                        return true;
+                }
+                if (actor.IsPilotable && actor.GetPilot() != null && actor.GetPilot().pilotDef.PilotTags.Contains("pilot_cannot_eject"))
+                {
+                    LogReport($"Pilot pilot_cannot_eject Tag set - {(modSettings.ObeyPilotCannotEjectTag ? "" : "NOT")} obeying");
+                    LogActor(actor, true);
+                    if (modSettings.ObeyPilotCannotEjectTag)
+                        return true;
+                }
+            }
+            catch(Exception ex)
+            {
+                LogDebug(ex);
+            }
+
             var pilotTracker = TrackedActors.First(tracker => tracker.Guid == actor.GUID);
             if (pilotTracker.PreventEjection)
             {
