@@ -30,7 +30,7 @@ namespace PanicSystem.Components.IRBTModUtilsCustomDialog {
 
         public static void OnCustomDialogMessage(MessageCenterMessage message) {
             PanicSystemDialogMessage msg = (PanicSystemDialogMessage)message;
-            if (msg == null) { return; }
+            if (msg == null || msg.DialogueContent == null) { return; }
 
             ModState.DialogueQueue.Enqueue(msg);
             if (!ModState.IsDialogStackActive) {
