@@ -4,17 +4,13 @@ using System.Linq;
 using BattleTech;
 using BattleTech.Achievements;
 using Harmony;
-using HBS;
-using PanicSystem.Components;
 using PanicSystem.Components.IRBTModUtilsCustomDialog;
 using UnityEngine;
 using static PanicSystem.Logger;
 using static PanicSystem.PanicSystem;
 using static PanicSystem.Components.Controller;
 using static PanicSystem.Helpers;
-using PanicSystem.Patches;
 using Random = UnityEngine.Random;
-using System.Reflection;
 
 namespace PanicSystem.Components
 {
@@ -170,13 +166,8 @@ namespace PanicSystem.Components
                 Random.Range(1, 100) <= modSettings.EjectPhraseChance)
             {
                 var ejectMessage = ejectPhraseList[Random.Range(0, ejectPhraseList.Count)];
-                // thank you IRBTModUtils
-                //LogDebug($"defender {defender}");
                 var castDef = Coordinator.CreateCast(defender);
-                var content = new DialogueContent(
-                    ejectMessage, Color.white, castDef.id, null, null, DialogCameraDistance.Medium, DialogCameraHeight.Default, 0
-                );
-                content.ContractInitialize(defender.Combat);
+                var content = Coordinator.BuildDialogueContent(castDef, ejectMessage, Color.white);
                 defender.Combat.MessageCenter.PublishMessage(new PanicSystemDialogMessage(defender, content, 6));
             }
 
@@ -203,10 +194,7 @@ namespace PanicSystem.Components
                 Patches.VehicleRepresentation.supressDeathFloatieOnce();
                 defender.EjectPilot(defender.GUID, -1, DeathMethod.PilotEjection, true);
                 CastDef castDef = Coordinator.CreateCast(defender);
-                DialogueContent content = new DialogueContent(
-                    "Destroy the tech, let's get outta here!", Color.white, castDef.id, null, null, DialogCameraDistance.Medium, DialogCameraHeight.Default, 0
-                );
-                content.ContractInitialize(defender.Combat);
+                var content = Coordinator.BuildDialogueContent(castDef, "Destroy the tech, let's get outta here!", Color.white);
                 defender.Combat.MessageCenter.PublishMessage(new PanicSystemDialogMessage(defender, content, 5));
             }
             else
