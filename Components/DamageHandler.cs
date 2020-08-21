@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using BattleTech;
 using BattleTech.Achievements;
@@ -15,11 +17,59 @@ using static PanicSystem.Helpers;
 using PanicSystem.Patches;
 using Random = UnityEngine.Random;
 using System.Reflection;
+using BattleTech.Save.Core;
 
 namespace PanicSystem.Components
 {
     public static class DamageHandler
     {
+        private const string MechCombatStatsTypeName = "MechCombatStats";
+
+        private static Type mechCombatStatsType;
+
+        private static Type playerMechStatsType;
+
+        private static MethodInfo tryGetValue;
+
+        private static MethodInfo incrementKillCount;
+
+        private static object mechCombatStats;
+
+        private static FieldInfo playerMechStatsField = typeof(CombatProcessor).GetField("playerMechStats", AccessTools.all);
+
+        public static CombatProcessor CombatProcessor;
+
+        static DamageHandler()
+        {
+            try
+            {
+                mechCombatStatsType = typeof(CombatProcessor).GetNestedType(MechCombatStatsTypeName, AccessTools.all);
+
+                if (mechCombatStatsType is null)
+                {
+                    LogError($"MechCombatStats Type is null");
+                }
+
+                playerMechStatsType = typeof(Dictionary<,>).MakeGenericType(typeof(string), mechCombatStatsType);
+
+                tryGetValue = playerMechStatsType.GetMethod("TryGetValue", AccessTools.all);
+
+                incrementKillCount = mechCombatStatsType.GetMethod("IncrementKillCount", AccessTools.all);
+
+                if (tryGetValue is null)
+                    LogError("tryGetValue is null");
+
+                if (incrementKillCount is null)
+                {
+                    LogError("incrementKillCount is null");
+                }
+            }
+            catch (Exception e)
+            {
+                LogError($"[{DateTime.Now}] {e}\n");
+            }
+        }
+
         public static void ProcessDamage(AbstractActor actor, float damage, float directStructureDamage, int heatdamage)
         {
             if (ShouldSkipProcessing(actor))
@@ -29,8 +79,8 @@ namespace PanicSystem.Components
 
             AbstractActor attacker = TurnDamageTracker.attackActor();//just for logging
 
-                //LogReport(new string('═', 46));
-                LogReport($"Damage to {actor.DisplayName}/{actor.Nickname}/{actor.GUID}");
+            //LogReport(new string('═', 46));
+            LogReport($"Damage to {actor.DisplayName}/{actor.Nickname}/{actor.GUID}");
             if (attacker != null)
             {
                 LogReport($"Damage by {attacker.DisplayName}/{attacker.Nickname}/{attacker.GUID}");
@@ -150,7 +200,7 @@ namespace PanicSystem.Components
                 TurnDamageTracker.resetDamageTrackerFor(defender);
             }
 
-             // stop if pilot isn't Panicked
+            // stop if pilot isn't Panicked
             if (TrackedActors[index].PanicStatus != PanicStatus.Panicked)
             {
                 return;
@@ -172,12 +222,7 @@ namespace PanicSystem.Components
                 var ejectMessage = ejectPhraseList[Random.Range(0, ejectPhraseList.Count)];
                 // thank you IRBTModUtils
                 //LogDebug($"defender {defender}");
-                var castDef = Coordinator.CreateCast(defender);
-                var content = new DialogueContent(
-                    ejectMessage, Color.white, castDef.id, null, null, DialogCameraDistance.Medium, DialogCameraHeight.Default, 0
-                );
-                content.ContractInitialize(defender.Combat);
-                defender.Combat.MessageCenter.PublishMessage(new PanicSystemDialogMessage(defender, content, 6));
+                defender.Combat.MessageCenter.PublishMessage(new PanicSystemDialogMessage(defender, null, 6));
             }
 
             // remove effects, to prevent exceptions that occur for unknown reasons
@@ -202,12 +247,7 @@ namespace PanicSystem.Components
                 // make the regular Pilot Ejected floatie not appear, for this ejection
                 Patches.VehicleRepresentation.supressDeathFloatieOnce();
                 defender.EjectPilot(defender.GUID, -1, DeathMethod.PilotEjection, true);
-                CastDef castDef = Coordinator.CreateCast(defender);
-                DialogueContent content = new DialogueContent(
-                    "Destroy the tech, let's get outta here!", Color.white, castDef.id, null, null, DialogCameraDistance.Medium, DialogCameraHeight.Default, 0
-                );
-                content.ContractInitialize(defender.Combat);
-                defender.Combat.MessageCenter.PublishMessage(new PanicSystemDialogMessage(defender, content, 5));
+                defender.Combat.MessageCenter.PublishMessage(new PanicSystemDialogMessage(defender, null, 5));
             }
             else
             {
@@ -269,8 +309,9 @@ namespace PanicSystem.Components
                         var value = stat.Value<int>();
                         statCollection.Set("MechsEjected", value + 1);
                     }
-                }else if (modSettings.VehiclesCanPanic &&
-                         defender is Vehicle)
+                }
+                else if (modSettings.VehiclesCanPanic &&
+                        defender is Vehicle)
                 {
                     statCollection.Set("OthersKilled", attackerPilot.OthersKilled + 1);
                     var stat = statCollection.GetStatistic("VehiclesEjected");
@@ -287,27 +328,42 @@ namespace PanicSystem.Components
                     }
                 }
 
-                // add achievement kill (more complicated)
-                var combatProcessors = Traverse.Create(UnityGameInstance.BattleTechGame.Achievements).Field("combatProcessors").GetValue<AchievementProcessor[]>();
-                var combatProcessor = combatProcessors.FirstOrDefault(x => x.GetType() == AccessTools.TypeByName("BattleTech.Achievements.CombatProcessor"));
-
-                // field is of type Dictionary<string, CombatProcessor.MechCombatStats>
-               var playerMechStats = Traverse.Create(combatProcessor).Field("playerMechStats").GetValue<IDictionary>();
-                if (playerMechStats != null)
+                try
                 {
-                    foreach (DictionaryEntry kvp in playerMechStats)
+                    object PlayerMechStats = playerMechStatsField.GetValue(CombatProcessor);
+                    bool result = (bool)tryGetValue.Invoke(PlayerMechStats, new[] { attackerPilot.GUID, mechCombatStats });
+
+                    if (result)
                     {
-                        if ((string) kvp.Key == attackerPilot.GUID)
+                        incrementKillCount.Invoke(mechCombatStats, null);
+                    }
+                }
+                catch (Exception e)
+                {
+                    LogError(e);
+                    // add achievement kill (more complicated)
+                    var combatProcessors = Traverse.Create(UnityGameInstance.BattleTechGame.Achievements).Field("combatProcessors").GetValue<AchievementProcessor[]>();
+                    var combatProcessor = combatProcessors.FirstOrDefault(x => x.GetType() == AccessTools.TypeByName("BattleTech.Achievements.CombatProcessor"));
+
+                    // field is of type Dictionary<string, CombatProcessor.MechCombatStats>
+                    var playerMechStats = Traverse.Create(combatProcessor).Field("playerMechStats").GetValue<IDictionary>();
+                    if (playerMechStats != null)
+                    {
+                        foreach (DictionaryEntry kvp in playerMechStats)
                         {
-                            Traverse.Create(kvp.Value).Method("IncrementKillCount").GetValue();
+                            if ((string)kvp.Key == attackerPilot.GUID)
+                            {
+                                Traverse.Create(kvp.Value).Method("IncrementKillCount").GetValue();
+                            }
                         }
                     }
                 }
 
+
                 var r = attackerPilot.StatCollection.GetStatistic("MechsEjected") == null
                         ? 0
                         : attackerPilot.StatCollection.GetStatistic("MechsEjected").Value<int>();
-                                    LogDebug($"{attackerPilot.Callsign} SetMechEjectionCount {r}");
+                LogDebug($"{attackerPilot.Callsign} SetMechEjectionCount {r}");
 
                 r = attackerPilot.StatCollection.GetStatistic("VehiclesEjected") == null
                     ? 0
