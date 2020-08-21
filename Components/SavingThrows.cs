@@ -366,12 +366,20 @@ namespace PanicSystem.Components
             {
                 if(actor.IsPilotable && actor.GetPilot()!=null && actor.GetPilot().StatCollection.GetValue<bool>("CanEject") == false)
                 {
-                    //Not using actor.GetPilot().CanEject as the pilot_cannot_eject is set by a lot of pilotdefs
-                    LogReport("Pilot CanEject Stat false");
+                    LogReport($"Pilot CanEject Stat false - {(modSettings.ObeyPilotCanEjectStat ? "":"NOT")} obeying");
                     LogActor(actor,true);
-                    return true;
+                    if(modSettings.ObeyPilotCanEjectStat)
+                        return true;
                 }
-            }catch(Exception ex)
+                if (actor.IsPilotable && actor.GetPilot() != null && actor.GetPilot().pilotDef.PilotTags.Contains("pilot_cannot_eject"))
+                {
+                    LogReport($"Pilot pilot_cannot_eject Tag set - {(modSettings.ObeyPilotCannotEjectTag ? "" : "NOT")} obeying");
+                    LogActor(actor, true);
+                    if (modSettings.ObeyPilotCannotEjectTag)
+                        return true;
+                }
+            }
+            catch(Exception ex)
             {
                 LogDebug(ex);
             }

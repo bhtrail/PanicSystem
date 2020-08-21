@@ -7,6 +7,8 @@ namespace PanicSystem
     public class Settings
     {
         public bool AlwaysPanic = false;
+        public bool ObeyPilotCanEjectStat = false;
+        public bool ObeyPilotCannotEjectTag = false;
         public bool Debug;
         public bool CombatLog;
         public bool CombatSaves;
