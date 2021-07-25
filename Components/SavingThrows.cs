@@ -147,9 +147,30 @@ namespace PanicSystem.Components
             {
                 try
                 {
+                    //BleedLevelFactor - modsetting
+
+                    if (pilot.StatCollection.GetValue<float>("BloodBank") > 0 &&
+                        pilot.StatCollection.GetValue<float>("BloodCapacity") > 0)
+                    {
+                        var bloodFraction = pilot.StatCollection.GetValue<float>("BloodBank") / pilot.StatCollection.GetValue<float>("BloodCapacity");
+                        if (bloodFraction < 1)
+                        {
+                            var bloodMulti = modSettings.BleedLevelFactor / bloodFraction;
+                            totalMultiplier += bloodMulti;
+                            LogReport($"{"Blood Level",-20} | {bloodMulti,10:F3} | {totalMultiplier,10:F3}");
+                        }
+                    }
+                    if (pilot.StatCollection.GetValue<float>("BleedingRate") > 0)
+                    {
+                        var bleedRate = pilot.StatCollection.GetValue<float>("BleedingRate");
+                        var bleedRateMulti = modSettings.BleedRateFactor * bleedRate;
+                        totalMultiplier += bleedRateMulti;
+                        LogReport($"{"Bleeding Rate",-20} | {bleedRateMulti,10:F3} | {totalMultiplier,10:F3}");
+                    }
+                    
                     if (modSettings.QuirksEnabled && attacker!=null &&
-                        attacker is Mech mech &&
-                        mech.MechDef.Chassis.ChassisTags.Contains("mech_quirk_distracting"))
+                            attacker is Mech mech &&
+                            mech.MechDef.Chassis.ChassisTags.Contains("mech_quirk_distracting"))
                     {
                         totalMultiplier += modSettings.DistractingModifier;
                         LogReport($"{"Distracting mech",-20} | {modSettings.DistractingModifier,10:F3} | {totalMultiplier,10:F3}");

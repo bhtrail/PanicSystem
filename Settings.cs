@@ -71,6 +71,8 @@ namespace PanicSystem
         public float UnsettledPanicFactor;
         public float StressedPanicFactor;
         public float PanickedPanicFactor;
+        public float BleedLevelFactor;
+        public float BleedRateFactor;
 
         // Quirks
         public bool QuirksEnabled;

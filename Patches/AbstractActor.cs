@@ -22,16 +22,22 @@ namespace PanicSystem.Patches
     {
         public static void Prefix(AbstractActor __instance)
         {
-            TurnDamageTracker.completedTurnFor(__instance);
-            if (__instance.IsDead || __instance.IsFlaggedForDeath && __instance.HasHandledDeath)
-            {
-                return;
-            }
-
             var pilot = __instance.GetPilot();
             if (pilot == null)
             {
                 Logger.LogDebug($"No pilot found for {__instance.Nickname}:{__instance.GUID}");
+                return;
+            }
+
+            if (pilot.StatCollection.GetValue<float>("BleedingRate") > 0)
+            {
+                Logger.LogDebug($"Pilot is bleeding, forcing panic check here.");
+                DamageHandler.ProcessBatchedTurnDamage(__instance);
+            }
+
+            TurnDamageTracker.completedTurnFor(__instance);
+            if (__instance.IsDead || __instance.IsFlaggedForDeath && __instance.HasHandledDeath)
+            {
                 return;
             }
 
