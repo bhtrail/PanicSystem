@@ -14,7 +14,7 @@ namespace PanicSystem
     {
         private const string LOGGER_NAME = "PanicSystem";
 
-        private static string LogFilePath => Path.Combine(modDirectory, "log.txt");
+        public static string LogFilePath => Path.Combine(modDirectory, "PanicSystem.log");
 
         private static ILog logger = HBS.Logging.Logger.GetLogger(LOGGER_NAME, LogLevel.Error);
 
@@ -39,6 +39,7 @@ namespace PanicSystem
             {
                 try
                 {
+
                     using (var writer = new StreamWriter(LogFilePath, true))
                     {
                         writer.WriteLine($" {input ?? "null"}");

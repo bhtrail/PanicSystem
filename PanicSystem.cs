@@ -26,8 +26,13 @@ namespace PanicSystem
         {
             try
             {
+
                 harmony = HarmonyInstance.Create("com.BattleTech.PanicSystem");
                 modDirectory = modDir;
+                if (File.Exists(LogFilePath))
+                {
+                    File.Delete(LogFilePath);
+                }
                 activeJsonPath = Path.Combine(modDir, "PanicSystem.json");
                 storageJsonPath = Path.Combine(modDir, "PanicSystemStorage.json");
                 try
@@ -61,6 +66,7 @@ namespace PanicSystem
 
                 harmony.PatchAll();
                 Helpers.SetupEjectPhrases(modDir);
+                LogDebug($"Initializing PanicSystem - Version {typeof(Settings).Assembly.GetName().Version}");
             }
             catch (Exception ex)
             {
