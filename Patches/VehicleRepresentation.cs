@@ -2,6 +2,7 @@ using Harmony;
 using System.Reflection;
 using PanicSystem;
 using static PanicSystem.Logger;
+using static PanicSystem.PanicSystem;
 
 namespace PanicSystem.Patches
 {
@@ -15,7 +16,7 @@ namespace PanicSystem.Patches
         {
             if (originalPDF == null)
             {
-                LogReport($"hookPDF");
+                modLog.LogReport($"hookPDF");
                 originalPDF = AccessTools.Method(typeof(BattleTech.VehicleRepresentation), "PlayDeathFloatie");
                 prefixPDF = AccessTools.Method(typeof(BattleTech.VehicleRepresentation), nameof(PrefixDeathFloatie));
                 PanicSystem.harmony.Patch(originalPDF, new HarmonyMethod(prefixPDF));

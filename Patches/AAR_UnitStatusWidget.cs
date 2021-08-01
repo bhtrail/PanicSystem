@@ -32,19 +32,19 @@ namespace PanicSystem.Patches
                 if (MechsEjected != null)
                 {
                     mechEjections = MechsEjected.Value<int>();
-                    LogDebug($"{___UnitData.pilot.Callsign} MechsEjected {mechEjections}");
+                    modLog.LogReport($"{___UnitData.pilot.Callsign} MechsEjected {mechEjections}");
                 }
 
                 var VehiclesEjected = ___UnitData.pilot.StatCollection.GetStatistic("VehiclesEjected");
                 if (VehiclesEjected != null)
                 {
                     vehicleEjections = VehiclesEjected.Value<int>();
-                    LogDebug($"{___UnitData.pilot.Callsign} vehicleEjections {vehicleEjections}");
+                    modLog.LogReport($"{___UnitData.pilot.Callsign} vehicleEjections {vehicleEjections}");
                 }
             }
             catch (Exception ex)
             {
-                LogDebug(ex);
+                LogError(ex);
             }
         }
 
@@ -87,7 +87,7 @@ namespace PanicSystem.Patches
             }
             catch (Exception ex)
             {
-                LogDebug(ex);
+                LogError(ex);
             }
 
             return codes.AsEnumerable();
@@ -102,7 +102,7 @@ namespace PanicSystem.Patches
                 {
                     for (var x = 0; x < vehicleEjections; x++)
                     {
-                        LogDebug($"{___UnitData.pilot.Callsign} vehicleEjections {x}/{vehicleEjections}");
+                        modLog.LogReport($"{___UnitData.pilot.Callsign} vehicleEjections {x}/{vehicleEjections}");
                         AARIcons.AddEjectedVehicle(___KillGridParent);
                     }
 
@@ -112,7 +112,7 @@ namespace PanicSystem.Patches
                 // weird loop
                 for (var x = 0; x < mechEjections; x++)
                 {
-                    LogDebug($"{___UnitData.pilot.Callsign} mechsEjections {x}/{mechEjections}");
+                    modLog.LogReport($"{___UnitData.pilot.Callsign} mechsEjections {x}/{mechEjections}");
                     AARIcons.AddEjectedMech(___KillGridParent);
                 }
 
@@ -120,7 +120,7 @@ namespace PanicSystem.Patches
             }
             catch (Exception ex)
             {
-                LogDebug(ex);
+                LogError(ex);
             }
         }
     }

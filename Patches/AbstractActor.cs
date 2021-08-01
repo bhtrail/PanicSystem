@@ -25,13 +25,13 @@ namespace PanicSystem.Patches
             var pilot = __instance.GetPilot();
             if (pilot == null)
             {
-                Logger.LogDebug($"No pilot found for {__instance.Nickname}:{__instance.GUID}");
+                modLog.LogReport($"No pilot found for {__instance.Nickname}:{__instance.GUID}");
                 return;
             }
-            Logger.LogDebug($"Processing {__instance.Nickname}:{__instance.GUID}");
+            modLog.LogReport($"Processing {__instance.Nickname}:{__instance.GUID}");
             if (pilot.StatCollection.GetValue<float>("BleedingRate") > 0)
             {
-                Logger.LogDebug($"Pilot is bleeding, forcing panic check here.");
+                modLog.LogReport($"Pilot is bleeding, forcing panic check here.");
                 DamageHandler.ProcessBatchedTurnDamage(__instance);
             }
 
@@ -43,7 +43,7 @@ namespace PanicSystem.Patches
 
             var index = GetActorIndex(__instance);
 
-            Logger.LogDebug($"Checking pilot panic for {__instance.Nickname}:{__instance.GUID} recent panic{TrackedActors[index].PanicWorsenedRecently} {TrackedActors[index].PanicStatus}" +
+            modLog.LogReport($"Checking pilot panic for {__instance.Nickname}:{__instance.GUID} recent panic{TrackedActors[index].PanicWorsenedRecently} {TrackedActors[index].PanicStatus}" +
                 $" Health:{Helpers.ActorHealth(__instance):F3}% v/s {(modSettings.MechHealthForCrit + (((int) TrackedActors[index].PanicStatus) * 10))} " +
                 $"Alone:{__instance.Combat.GetAllAlliesOf(__instance).TrueForAll(m => m.IsDead || m == __instance)}");
 
@@ -53,7 +53,7 @@ namespace PanicSystem.Patches
             if (!TrackedActors[index].PanicWorsenedRecently &&
                 TrackedActors[index].PanicStatus > PanicStatus.Confident && Helpers.ActorHealth(__instance)> (modSettings.MechHealthForCrit+(((int)TrackedActors[index].PanicStatus)*10)) && !__instance.Combat.GetAllAlliesOf(__instance).TrueForAll(m => m.IsDead || m == __instance))
             {
-                Logger.LogDebug($"Improving pilot panic for {__instance.Nickname}:{__instance.GUID}");
+                modLog.LogReport($"Improving pilot panic for {__instance.Nickname}:{__instance.GUID}");
                 TrackedActors[index].PanicStatus--;
             }
 

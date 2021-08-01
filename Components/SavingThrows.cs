@@ -39,7 +39,7 @@ namespace PanicSystem.Components
 
                 if (defender == null)
                 {
-                    LogDebug($"defender null, passing save. actor {actor} is type {actor.GetType()}");
+                    modLog.LogReport($"defender null, passing save. actor {actor} is type {actor.GetType()}");
                     return true;
                 }
 
@@ -50,7 +50,7 @@ namespace PanicSystem.Components
                         if (m.pilot.pilotDef.PilotTags.Contains("pilot_brave"))
                         {
                             savingThrow -= modSettings.BraveModifier;
-                            LogReport($"{"Bravery",-20} | {modSettings.BraveModifier,10} | {savingThrow,10:F3}");
+                            modLog.LogReport($"{"Bravery",-20} | {modSettings.BraveModifier,10} | {savingThrow,10:F3}");
                         }
                     }
                 }
@@ -58,26 +58,26 @@ namespace PanicSystem.Components
                 var index = GetActorIndex(defender);
                 float panicModifier = GetPanicModifier(TrackedActors[index].PanicStatus);
                 savingThrow *= panicModifier;
-                LogReport($"{"Panic multiplier",-20} | {panicModifier,10} | {savingThrow,10:F3}");
+                modLog.LogReport($"{"Panic multiplier",-20} | {panicModifier,10} | {savingThrow,10:F3}");
                 savingThrow = (float) Math.Max(0f, Math.Round(savingThrow));
 
                 if (savingThrow < 1)
                 {
-                    LogReport(new string('-', 46));
-                    LogReport("Negative saving throw| skipping");
+                    modLog.LogReport(new string('-', 46));
+                    modLog.LogReport("Negative saving throw| skipping");
                     return true;
                 }
 
                 var roll = Random.Range(1, 100);
-                LogReport(new string('-', 46));
-                LogReport($"{"Saving throw",-20} | {savingThrow,-5}{roll,5} | {"Roll",10}");
-                LogReport(new string('-', 46));
+                modLog.LogReport(new string('-', 46));
+                modLog.LogReport($"{"Saving throw",-20} | {savingThrow,-5}{roll,5} | {"Roll",10}");
+                modLog.LogReport(new string('-', 46));
                 SaySpamFloatie(defender, $"{$"{modSettings.PanicSpamSaveString}:{savingThrow}",-6} {$"{modSettings.PanicSpamRollString}:{roll}!",3}");
 
                 // lower panic level on crit success
                 if (roll == 100)
                 {
-                    LogReport("Critical success");
+                    modLog.LogReport("Critical success");
                     SaySpamFloatie(defender, $"{modSettings.PanicSpamCritSaveString}");
                     TrackedActors[index].PanicStatus--;
                     // just in case the status went down then back up on a crit save in the same round
@@ -88,12 +88,12 @@ namespace PanicSystem.Components
                 if (!modSettings.AlwaysPanic &&
                     roll >= savingThrow)
                 {
-                    LogReport("Successful panic save");
+                    modLog.LogReport("Successful panic save");
                     SaySpamFloatie(defender, $"{modSettings.PanicSpamSaveString}!");
                     return true;
                 }
 
-                LogReport("Failed panic save");
+                modLog.LogReport("Failed panic save");
                 SaySpamFloatie(defender, $"{modSettings.PanicSpamFailString}!");
 
                 var originalStatus = TrackedActors[index].PanicStatus;
@@ -113,7 +113,7 @@ namespace PanicSystem.Components
                     ActorHealth(defender) <= modSettings.MechHealthForCrit &&
                     roll < Convert.ToInt32(savingThrow) - modSettings.CritOver)
                 {
-                    LogReport("Critical failure on panic save");
+                    modLog.LogReport("Critical failure on panic save");
                     defender.Combat.MessageCenter.PublishMessage(
                         new AddSequenceToStackMessage(
                             new ShowActorInfoSequence(defender, modSettings.PanicCritFailString, FloatieMessage.MessageNature.CriticalHit, true)));
@@ -126,7 +126,7 @@ namespace PanicSystem.Components
             }
             catch (Exception ex)
             {
-                LogDebug(ex);
+                modLog.LogReport(ex);
             }
 
             return false;
@@ -141,7 +141,7 @@ namespace PanicSystem.Components
             float totalMultiplier = 0;
 
             DrawHeader();
-            LogReport($"{$"Unit health {ActorHealth(defender):F2}%",-20} | {"",10} |");
+            modLog.LogReport($"{$"Unit health {ActorHealth(defender):F2}%",-20} | {"",10} |");
 
             if (defender is Mech defendingMech)
             {
@@ -157,7 +157,7 @@ namespace PanicSystem.Components
                         {
                             var bloodMulti = modSettings.BleedLevelFactor / bloodFraction;
                             totalMultiplier += bloodMulti;
-                            LogReport($"{"Blood Level",-20} | {bloodMulti,10:F3} | {totalMultiplier,10:F3}");
+                            modLog.LogReport($"{"Blood Level",-20} | {bloodMulti,10:F3} | {totalMultiplier,10:F3}");
                         }
                     }
                     if (pilot.StatCollection.GetValue<float>("BleedingRate") > 0)
@@ -165,7 +165,7 @@ namespace PanicSystem.Components
                         var bleedRate = pilot.StatCollection.GetValue<float>("BleedingRate");
                         var bleedRateMulti = modSettings.BleedRateFactor * bleedRate;
                         totalMultiplier += bleedRateMulti;
-                        LogReport($"{"Bleeding Rate",-20} | {bleedRateMulti,10:F3} | {totalMultiplier,10:F3}");
+                        modLog.LogReport($"{"Bleeding Rate",-20} | {bleedRateMulti,10:F3} | {totalMultiplier,10:F3}");
                     }
                     
                     if (modSettings.QuirksEnabled && attacker!=null &&
@@ -173,7 +173,7 @@ namespace PanicSystem.Components
                             mech.MechDef.Chassis.ChassisTags.Contains("mech_quirk_distracting"))
                     {
                         totalMultiplier += modSettings.DistractingModifier;
-                        LogReport($"{"Distracting mech",-20} | {modSettings.DistractingModifier,10:F3} | {totalMultiplier,10:F3}");
+                        modLog.LogReport($"{"Distracting mech",-20} | {modSettings.DistractingModifier,10:F3} | {totalMultiplier,10:F3}");
                     }
 #if NO_CAC
                     if (modSettings.HeatDamageFactor > 0){
@@ -181,80 +181,80 @@ namespace PanicSystem.Components
                     if (modSettings.HeatDamageFactor > 0 && defender.isHasHeat()) { 
 #endif
                         totalMultiplier += modSettings.HeatDamageFactor * heatDamage;
-                        LogReport($"{$"Heat damage {heatDamage}",-20} | {modSettings.HeatDamageFactor * heatDamage,10:F3} | {totalMultiplier,10:F3}");
+                        modLog.LogReport($"{$"Heat damage {heatDamage}",-20} | {modSettings.HeatDamageFactor * heatDamage,10:F3} | {totalMultiplier,10:F3}");
                     }
 
                     float percentPilot = PercentPilot(pilot);
                     if (percentPilot < 1)
                     {
                         totalMultiplier += modSettings.PilotHealthMaxModifier * percentPilot;
-                        LogReport($"{"Pilot injuries",-20} | {modSettings.PilotHealthMaxModifier * percentPilot,10:F3} | {totalMultiplier,10:F3}");
+                        modLog.LogReport($"{"Pilot injuries",-20} | {modSettings.PilotHealthMaxModifier * percentPilot,10:F3} | {totalMultiplier,10:F3}");
                     }
 
                     if (defendingMech.IsUnsteady)
                     {
                         totalMultiplier += modSettings.UnsteadyModifier;
-                        LogReport($"{"Unsteady",-20} | {modSettings.UnsteadyModifier,10} | {totalMultiplier,10:F3}");
+                        modLog.LogReport($"{"Unsteady",-20} | {modSettings.UnsteadyModifier,10} | {totalMultiplier,10:F3}");
                     }
 
                     if (defendingMech.IsFlaggedForKnockdown)
                     {
                         totalMultiplier += modSettings.UnsteadyModifier;
-                        LogReport($"{"Knockdown",-20} | {modSettings.UnsteadyModifier,10} | {totalMultiplier,10:F3}");
+                        modLog.LogReport($"{"Knockdown",-20} | {modSettings.UnsteadyModifier,10} | {totalMultiplier,10:F3}");
                     }
 
                     if (modSettings.OverheatedModifier > 0 && defendingMech.OverheatLevel < defendingMech.CurrentHeat)
                     {
                         totalMultiplier += modSettings.OverheatedModifier;
-                        LogReport($"{"Heat",-20} | {modSettings.OverheatedModifier,10:F3} | {totalMultiplier,10:F3}");
+                        modLog.LogReport($"{"Heat",-20} | {modSettings.OverheatedModifier,10:F3} | {totalMultiplier,10:F3}");
                     }
 
                     if (modSettings.ShutdownModifier > 0 && defendingMech.IsShutDown)
                     {
                         totalMultiplier += modSettings.ShutdownModifier;
-                        LogReport($"{"Shutdown",-20} | {modSettings.ShutdownModifier,10:F3} | {totalMultiplier,10:F3}");
+                        modLog.LogReport($"{"Shutdown",-20} | {modSettings.ShutdownModifier,10:F3} | {totalMultiplier,10:F3}");
                     }
 
                     float percentHead = PercentHead(defendingMech);
                     if (percentHead < 1)
                     {
                         totalMultiplier += modSettings.HeadMaxModifier * (1 - percentHead);
-                        LogReport($"{"Head",-20} | {modSettings.HeadMaxModifier * (1 - percentHead),10:F3} | {totalMultiplier,10:F3}");
+                        modLog.LogReport($"{"Head",-20} | {modSettings.HeadMaxModifier * (1 - percentHead),10:F3} | {totalMultiplier,10:F3}");
                     }
 
                     float percentCenterTorso = PercentCenterTorso(defendingMech);
                     if (percentCenterTorso < 1)
                     {
                         totalMultiplier += modSettings.CenterTorsoMaxModifier * (1 - percentCenterTorso);
-                        LogReport($"{"CT",-20} | {modSettings.CenterTorsoMaxModifier * (1 - percentCenterTorso),10:F3} | {totalMultiplier,10:F3}");
+                        modLog.LogReport($"{"CT",-20} | {modSettings.CenterTorsoMaxModifier * (1 - percentCenterTorso),10:F3} | {totalMultiplier,10:F3}");
                     }
 
                     float percentLeftTorso = PercentLeftTorso(defendingMech);
                     if (percentLeftTorso < 1)
                     {
                         totalMultiplier += modSettings.SideTorsoMaxModifier * (1 - percentLeftTorso);
-                        LogReport($"{"LT",-20} | {modSettings.SideTorsoMaxModifier * (1 - percentLeftTorso),10:F3} | {totalMultiplier,10:F3}");
+                        modLog.LogReport($"{"LT",-20} | {modSettings.SideTorsoMaxModifier * (1 - percentLeftTorso),10:F3} | {totalMultiplier,10:F3}");
                     }
 
                     float percentRightTorso = PercentRightTorso(defendingMech);
                     if (percentRightTorso < 1)
                     {
                         totalMultiplier += modSettings.SideTorsoMaxModifier * (1 - percentRightTorso);
-                        LogReport($"{"RT",-20} | {modSettings.SideTorsoMaxModifier * (1 - percentRightTorso),10:F3} | {totalMultiplier,10:F3}");
+                        modLog.LogReport($"{"RT",-20} | {modSettings.SideTorsoMaxModifier * (1 - percentRightTorso),10:F3} | {totalMultiplier,10:F3}");
                     }
 
                     float percentLeftLeg = PercentLeftLeg(defendingMech);
                     if (percentLeftLeg < 1)
                     {
                         totalMultiplier += modSettings.LeggedMaxModifier * (1 - percentLeftLeg);
-                        LogReport($"{"LL",-20} | {modSettings.LeggedMaxModifier * (1 - percentLeftLeg),10:F3} | {totalMultiplier,10:F3}");
+                        modLog.LogReport($"{"LL",-20} | {modSettings.LeggedMaxModifier * (1 - percentLeftLeg),10:F3} | {totalMultiplier,10:F3}");
                     }
 
                     float percentRightLeg = PercentRightLeg(defendingMech);
                     if (percentRightLeg < 1)
                     {
                         totalMultiplier += modSettings.LeggedMaxModifier * (1 - percentRightLeg);
-                        LogReport($"{"RL",-20} | {modSettings.LeggedMaxModifier * (1 - percentRightLeg),10:F3} | {totalMultiplier,10:F3}");
+                        modLog.LogReport($"{"RL",-20} | {modSettings.LeggedMaxModifier * (1 - percentRightLeg),10:F3} | {totalMultiplier,10:F3}");
                     }
 
                     // alone
@@ -266,20 +266,20 @@ namespace PanicSystem.Components
                         }
 
                         totalMultiplier += modSettings.AloneModifier;
-                        LogReport($"{"Alone",-20} | {modSettings.AloneModifier,10} | {totalMultiplier,10:F3}");
+                        modLog.LogReport($"{"Alone",-20} | {modSettings.AloneModifier,10} | {totalMultiplier,10:F3}");
                     }else if(defendingMech.Combat.GetAllAlliesOf(defendingMech).Count()>0)
                     {
                         int alliesdead = defendingMech.Combat.GetAllAlliesOf(defendingMech).Where(m => m.IsDead).Count();
                         int alliestotal = defendingMech.Combat.GetAllAlliesOf(defendingMech).Count();
 
                         totalMultiplier += modSettings.AloneModifier*alliesdead/alliestotal;
-                        LogReport($"{$"Alone {alliesdead}/{alliestotal}",-20} | {modSettings.AloneModifier * alliesdead / alliestotal,10:F3} | {totalMultiplier,10:F3}");
+                        modLog.LogReport($"{$"Alone {alliesdead}/{alliestotal}",-20} | {modSettings.AloneModifier * alliesdead / alliestotal,10:F3} | {totalMultiplier,10:F3}");
                     }
                 }
                 catch (Exception ex)
                 {
                     // BOMB
-                    LogReport(ex);
+                    modLog.LogReport(ex);
                     return -1f;
                 }
             }
@@ -293,7 +293,7 @@ namespace PanicSystem.Components
                 }
 
                 totalMultiplier += modSettings.WeaponlessModifier;
-                LogReport($"{"Weaponless",-20} | {modSettings.WeaponlessModifier,10} | {totalMultiplier,10:F3}");
+                modLog.LogReport($"{"Weaponless",-20} | {modSettings.WeaponlessModifier,10} | {totalMultiplier,10:F3}");
             }
 
             // directly override the multiplier for vehicles
@@ -305,33 +305,33 @@ namespace PanicSystem.Components
                 if (percentTurret < 1)
                 {
                     totalMultiplier += modSettings.VehicleDamageFactor * (1 - percentTurret);
-                    LogReport($"{"T",-20} | {modSettings.VehicleDamageFactor * (1 - percentTurret),10:F3} | {totalMultiplier,10:F3}");
+                    modLog.LogReport($"{"T",-20} | {modSettings.VehicleDamageFactor * (1 - percentTurret),10:F3} | {totalMultiplier,10:F3}");
                 }
                 float percentLeft = PercentLeft(defendingVehicle);
                 if (percentLeft < 1)
                 {
                     totalMultiplier += modSettings.VehicleDamageFactor * (1 - percentLeft);
-                    LogReport($"{"L",-20} | {modSettings.VehicleDamageFactor * (1 - percentLeft),10:F3} | {totalMultiplier,10:F3}");
+                    modLog.LogReport($"{"L",-20} | {modSettings.VehicleDamageFactor * (1 - percentLeft),10:F3} | {totalMultiplier,10:F3}");
                 }
                 float percentRight = PercentRight(defendingVehicle);
                 if (percentRight < 1)
                 {
                     totalMultiplier += modSettings.VehicleDamageFactor * (1 - percentRight);
-                    LogReport($"{"R",-20} | {modSettings.VehicleDamageFactor * (1 - percentRight),10:F3} | {totalMultiplier,10:F3}");
+                    modLog.LogReport($"{"R",-20} | {modSettings.VehicleDamageFactor * (1 - percentRight),10:F3} | {totalMultiplier,10:F3}");
                 }
                 float percentFront = PercentFront(defendingVehicle);
                 if (percentFront < 1)
                 {
                     totalMultiplier += modSettings.VehicleDamageFactor * (1 - percentFront);
-                    LogReport($"{"F",-20} | {modSettings.VehicleDamageFactor * (1 - percentFront),10:F3} | {totalMultiplier,10:F3}");
+                    modLog.LogReport($"{"F",-20} | {modSettings.VehicleDamageFactor * (1 - percentFront),10:F3} | {totalMultiplier,10:F3}");
                 }
                 float percentRear = PercentRear(defendingVehicle);
                 if (percentRear < 1)
                 {
                     totalMultiplier += modSettings.VehicleDamageFactor * (1 - percentRear);
-                    LogReport($"{"B",-20} | {modSettings.VehicleDamageFactor * (1 - percentRear),10:F3} | {totalMultiplier,10:F3}");
+                    modLog.LogReport($"{"B",-20} | {modSettings.VehicleDamageFactor * (1 - percentRear),10:F3} | {totalMultiplier,10:F3}");
                 }
-                LogReport($"{"Vehicle state",-20} | {modSettings.VehicleDamageFactor,10} | {totalMultiplier,10:F3}");
+                modLog.LogReport($"{"Vehicle state",-20} | {modSettings.VehicleDamageFactor,10} | {totalMultiplier,10:F3}");
 
                 // alone
                 if (defendingVehicle.Combat.GetAllAlliesOf(defendingVehicle).TrueForAll(m => m.IsDead || m == defendingVehicle))
@@ -342,7 +342,7 @@ namespace PanicSystem.Components
                     }
 
                     totalMultiplier += modSettings.AloneModifier;
-                    LogReport($"{"Alone",-20} | {modSettings.AloneModifier,10} | {totalMultiplier,10:F3}");
+                    modLog.LogReport($"{"Alone",-20} | {modSettings.AloneModifier,10} | {totalMultiplier,10:F3}");
                 }
                 else if (defendingVehicle.Combat.GetAllAlliesOf(defendingVehicle).Count() > 0)
                 {
@@ -350,7 +350,7 @@ namespace PanicSystem.Components
                     int alliestotal = defendingVehicle.Combat.GetAllAlliesOf(defendingVehicle).Count();
 
                     totalMultiplier += modSettings.AloneModifier * alliesdead / alliestotal;
-                    LogReport($"{$"Alone {alliesdead}/{alliestotal}",-20} | {modSettings.AloneModifier * alliesdead / alliestotal,10:F3} | {totalMultiplier,10:F3}");
+                    modLog.LogReport($"{$"Alone {alliesdead}/{alliestotal}",-20} | {modSettings.AloneModifier * alliesdead / alliestotal,10:F3} | {totalMultiplier,10:F3}");
                 }
             }
 
@@ -364,7 +364,7 @@ namespace PanicSystem.Components
             }
 
             totalMultiplier -= resolveModifier;
-            LogReport($"{$"Resolve {defender.Combat.LocalPlayerTeam.Morale}",-20} | {resolveModifier * -1,10:F3} | {totalMultiplier,10:F3}");
+            modLog.LogReport($"{$"Resolve {defender.Combat.LocalPlayerTeam.Morale}",-20} | {resolveModifier * -1,10:F3} | {totalMultiplier,10:F3}");
 
             if (modSettings.VehiclesCanPanic &&
                 defender is Vehicle)
@@ -374,27 +374,27 @@ namespace PanicSystem.Components
 
             totalMultiplier -= gutsAndTacticsSum;
 
-            LogReport($"{"Guts and Tactics",-20} | {$"-{gutsAndTacticsSum}",10} | {totalMultiplier,10:F3}");
+            modLog.LogReport($"{"Guts and Tactics",-20} | {$"-{gutsAndTacticsSum}",10} | {totalMultiplier,10:F3}");
             return totalMultiplier;
         }
 
         // false is punchin' out
         public static bool SavedVsEject(AbstractActor actor, float savingThrow)
         {
-            LogReport("Panic save failure requires eject save");
+            modLog.LogReport("Panic save failure requires eject save");
 
             try
             {
                 if(actor.IsPilotable && actor.GetPilot()!=null && actor.GetPilot().StatCollection.GetValue<bool>("CanEject") == false)
                 {
-                    LogReport($"Pilot CanEject Stat false - {(modSettings.ObeyPilotCanEjectStat ? "":"NOT")} obeying");
+                    modLog.LogReport($"Pilot CanEject Stat false - {(modSettings.ObeyPilotCanEjectStat ? "":"NOT")} obeying");
                     LogActor(actor,true);
                     if(modSettings.ObeyPilotCanEjectStat)
                         return true;
                 }
                 if (actor.IsPilotable && actor.GetPilot() != null && actor.GetPilot().pilotDef.PilotTags.Contains("pilot_cannot_eject"))
                 {
-                    LogReport($"Pilot pilot_cannot_eject Tag set - {(modSettings.ObeyPilotCannotEjectTag ? "" : "NOT")} obeying");
+                    modLog.LogReport($"Pilot pilot_cannot_eject Tag set - {(modSettings.ObeyPilotCannotEjectTag ? "" : "NOT")} obeying");
                     LogActor(actor, true);
                     if (modSettings.ObeyPilotCannotEjectTag)
                         return true;
@@ -402,13 +402,13 @@ namespace PanicSystem.Components
             }
             catch(Exception ex)
             {
-                LogDebug(ex);
+                modLog.LogReport(ex);
             }
 
             var pilotTracker = TrackedActors.First(tracker => tracker.Guid == actor.GUID);
             if (pilotTracker.PreventEjection)
             {
-                LogReport("Ejection forbidden after crit unless already stressed or panicked");
+                modLog.LogReport("Ejection forbidden after crit unless already stressed or panicked");
                 pilotTracker.PreventEjection = false;
                 return true;
             }
@@ -420,7 +420,7 @@ namespace PanicSystem.Components
                 if (mech.pilot.pilotDef.PilotTags.Contains("pilot_dependable"))
                 {
                     savingThrow -= modSettings.DependableModifier;
-                    LogReport($"{"Dependable",-20} | {modSettings.DependableModifier,10} | {savingThrow,10:F3}");
+                    modLog.LogReport($"{"Dependable",-20} | {modSettings.DependableModifier,10} | {savingThrow,10:F3}");
                 }
             }
 
@@ -429,24 +429,24 @@ namespace PanicSystem.Components
                 actor is Vehicle)
             {
                 savingThrow = Math.Max(0f, savingThrow - modSettings.BaseVehicleEjectionResist);
-                LogReport($"{"Base ejection resist",-20} | {modSettings.BaseVehicleEjectionResist,10} | {savingThrow,10:F3}");
+                modLog.LogReport($"{"Base ejection resist",-20} | {modSettings.BaseVehicleEjectionResist,10} | {savingThrow,10:F3}");
             }
             else if (actor is Mech)
             {
                 savingThrow = Math.Max(0f, savingThrow - modSettings.BaseEjectionResist);
-                LogReport($"{"Base ejection resist",-20} | {modSettings.BaseEjectionResist,10} | {savingThrow,10:F3}");
+                modLog.LogReport($"{"Base ejection resist",-20} | {modSettings.BaseEjectionResist,10} | {savingThrow,10:F3}");
             }
 
             savingThrow = (float) Math.Round(savingThrow);
-            LogReport($"{"Eject multiplier",-20} | {modSettings.EjectChanceFactor,10} | {savingThrow,10:F3}");
+            modLog.LogReport($"{"Eject multiplier",-20} | {modSettings.EjectChanceFactor,10} | {savingThrow,10:F3}");
             var roll = Random.Range(1, 100);
-            LogReport(new string('-', 46));
-            LogReport($"{"Saving throw",-20} | {savingThrow,-5:###}{roll,5} | {"Roll",10}");
-            LogReport(new string('-', 46));
+            modLog.LogReport(new string('-', 46));
+            modLog.LogReport($"{"Saving throw",-20} | {savingThrow,-5:###}{roll,5} | {"Roll",10}");
+            modLog.LogReport(new string('-', 46));
             if (!modSettings.AlwaysPanic &&
                 savingThrow < 1)
             {
-                LogReport("Negative saving throw| skipping");
+                modLog.LogReport("Negative saving throw| skipping");
                 SaySpamFloatie(actor, $"{modSettings.PanicSpamEjectResistString}");
                 return true;
             }
@@ -458,7 +458,7 @@ namespace PanicSystem.Components
             if (!modSettings.AlwaysPanic &&
                 roll >= savingThrow)
             {
-                LogReport("Successful ejection save");
+                modLog.LogReport("Successful ejection save");
                 SaySpamFloatie(actor, $"{modSettings.PanicSpamSaveString}!  {ActorHealth(actor):#.#}%");
                 return true;
             }
@@ -468,7 +468,7 @@ namespace PanicSystem.Components
             {
                 if (modSettings.QuirksEnabled && m.MechDef.Chassis.ChassisTags.Contains("mech_quirk_noeject"))
                 {
-                    LogReport("This mech can't eject (quirk)");
+                    modLog.LogReport("This mech can't eject (quirk)");
                     actor.Combat.MessageCenter.PublishMessage(
                         new AddSequenceToStackMessage(
                             new ShowActorInfoSequence(actor, "Mech quirk: Can't eject", FloatieMessage.MessageNature.PilotInjury, true)));
@@ -478,7 +478,7 @@ namespace PanicSystem.Components
                 if (modSettings.QuirksEnabled && m.pilot.pilotDef.PilotTags.Contains("pilot_drunk") &&
                     m.pilot.pilotDef.TimeoutRemaining > 0)
                 {
-                    LogReport("Drunkard - not ejecting");
+                    modLog.LogReport("Drunkard - not ejecting");
                     actor.Combat.MessageCenter.PublishMessage(
                         new AddSequenceToStackMessage(
                             new ShowActorInfoSequence(actor, "Pilot quirk: Drunkard won't eject", FloatieMessage.MessageNature.PilotInjury, true)));
@@ -486,7 +486,7 @@ namespace PanicSystem.Components
                 }
             }
 
-            LogReport("Failed ejection save: Punchin\' Out!!");
+            modLog.LogReport("Failed ejection save: Punchin\' Out!!");
             return false;
         }
     }

@@ -62,7 +62,7 @@ namespace PanicSystem.Components
             }
             catch (Exception e)
             {
-                LogError($"[{DateTime.Now}] {e}\n");
+                LogError($"{e}");
             }
         }
 
@@ -75,11 +75,11 @@ namespace PanicSystem.Components
 
             AbstractActor attacker = TurnDamageTracker.attackActor();//just for logging
 
-            //LogReport(new string('═', 46));
-            LogReport($"Damage to {actor.DisplayName}/{actor.Nickname}/{actor.GUID}");
+            //modLog.LogReport(new string('═', 46));
+            modLog.LogReport($"Damage to {actor.DisplayName}/{actor.Nickname}/{actor.GUID}");
             if (attacker != null)
             {
-                LogReport($"Damage by {attacker.DisplayName}/{attacker.Nickname}/{attacker.GUID}");
+                modLog.LogReport($"Damage by {attacker.DisplayName}/{attacker.Nickname}/{attacker.GUID}");
             }
 
             AbstractActor defender = null;
@@ -96,21 +96,22 @@ namespace PanicSystem.Components
             // a building or turret?
             if (defender == null)
             {
-                LogDebug("Not a mech or vehicle");
+                modLog.LogReport("Not a mech or vehicle");
                 return;
             }
 
             if (defender.IsDead || defender.IsFlaggedForDeath)
             {
-                LogDebug("He's dead Jim.....");
+                modLog.LogReport("He's dead Jim.....");
                 return;
             }
-            LogReport($"Damage >>> D: {damage:F3} DS: {directStructureDamage:F3} H: {heatdamage}");
+            modLog.LogReport($"Damage >>> D: {damage:F3} DS: {directStructureDamage:F3} H: {heatdamage}");
             TurnDamageTracker.batchDamageDuringActivation(actor, damage, directStructureDamage, heatdamage);
         }
 
         public static void ProcessBatchedTurnDamage(AbstractActor actor)
         {
+            if (actor == null) return;
             int heatdamage = 0;
 
             if (ShouldSkipProcessing(actor))
@@ -119,9 +120,10 @@ namespace PanicSystem.Components
             }
 
             AbstractActor attacker = TurnDamageTracker.attackActor();
-            LogReport($"\n{new string('═', 46)}");
-            LogReport($"Damage to {actor?.DisplayName}/{actor?.Nickname}/{actor?.GUID}");
-            LogReport($"Damage by {attacker?.DisplayName}/{attacker?.Nickname}/{attacker?.GUID}");
+            if (attacker == null) return;
+            modLog.LogReport($"\n{new string('═', 46)}");
+            modLog.LogReport($"Damage to {actor?.DisplayName}/{actor?.Nickname}/{actor?.GUID}");
+            modLog.LogReport($"Damage by {attacker?.DisplayName}/{attacker?.Nickname}/{attacker?.GUID}");
 
             // get the attacker in case they have mech quirks
             AbstractActor defender = null;
@@ -138,13 +140,13 @@ namespace PanicSystem.Components
             // a building or turret?
             if (defender == null)
             {
-                LogDebug("Not a mech or vehicle");
+                modLog.LogReport("Not a mech or vehicle");
                 return;
             }
 
             if (defender.IsDead || defender.IsFlaggedForDeath)
             {
-                LogDebug("He's dead Jim.....");
+                modLog.LogReport("He's dead Jim.....");
                 return;
             }
 
@@ -153,7 +155,7 @@ namespace PanicSystem.Components
             if (modSettings.OneChangePerTurn &&
                 TrackedActors[index].PanicWorsenedRecently)
             {
-                LogDebug($"OneChangePerTurn {defender.Nickname} - abort");
+                modLog.LogReport($"OneChangePerTurn {defender.Nickname} - abort");
                 return;
             }
 
@@ -175,7 +177,7 @@ namespace PanicSystem.Components
                     {
                         defender.Combat.MessageCenter.PublishMessage(new AddSequenceToStackMessage
                             (new ShowActorInfoSequence(defender, "WOOPS!", FloatieMessage.MessageNature.Debuff, false)));
-                        LogReport("Very klutzy!");
+                        modLog.LogReport("Very klutzy!");
                         return;
                     }
                 }
@@ -231,9 +233,9 @@ namespace PanicSystem.Components
                 {
                     defender.CancelEffect(effect);
                 }
-                catch
+                catch (Exception e)
                 {
-                    // ignored
+                    LogError($"{e}");
                 }
             }
 
@@ -252,8 +254,8 @@ namespace PanicSystem.Components
                 defender.EjectPilot(defender.GUID, -1, DeathMethod.PilotEjection, false);
             }
 
-            LogReport("Ejected");
-            //LogDebug($"Runtime {stopwatch.Elapsed}");
+            modLog.LogReport("Ejected");
+            //modLog.LogReport($"Runtime {stopwatch.Elapsed}");
 
             if (!modSettings.CountAsKills)
             {
@@ -264,14 +266,14 @@ namespace PanicSystem.Components
             if (attacker?.GUID == defender.GUID)
             {
                 //killed himself - possibly mines or made a building land on his own head ;)
-                LogReport("Self Kill not counting");
+                modLog.LogReport("Self Kill not counting");
                 return;
             }
 
             if (attacker?.team?.GUID == defender.team?.GUID)
             {
                 //killed a friendly
-                LogReport("Friendly Fire, Same Team Kill, not counting");
+                modLog.LogReport("Friendly Fire, Same Team Kill, not counting");
                 return;
             }
 
@@ -361,16 +363,16 @@ namespace PanicSystem.Components
                 var r = attackerPilot.StatCollection.GetStatistic("MechsEjected") == null
                         ? 0
                         : attackerPilot.StatCollection.GetStatistic("MechsEjected").Value<int>();
-                LogDebug($"{attackerPilot.Callsign} SetMechEjectionCount {r}");
+                modLog.LogReport($"{attackerPilot.Callsign} SetMechEjectionCount {r}");
 
                 r = attackerPilot.StatCollection.GetStatistic("VehiclesEjected") == null
                     ? 0
                     : attackerPilot.StatCollection.GetStatistic("VehiclesEjected").Value<int>();
-                LogDebug($"{attackerPilot.Callsign} SetVehicleEjectionCount {r}");
+                modLog.LogReport($"{attackerPilot.Callsign} SetVehicleEjectionCount {r}");
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                LogDebug(ex);
+                LogError($"{e}");
             }
         }
     }

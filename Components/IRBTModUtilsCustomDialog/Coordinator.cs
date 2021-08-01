@@ -34,13 +34,13 @@ namespace PanicSystem.Components.IRBTModUtilsCustomDialog {
 
             ModState.DialogueQueue.Enqueue(msg);
             if (!ModState.IsDialogStackActive) {
-                //LogDebug("No existing dialog sequence, publishing a new one.");
+                //modLog.("No existing dialog sequence, publishing a new one.");
                 ModState.IsDialogStackActive = true;
                 MessageCenter.PublishMessage(
                     new AddParallelSequenceToStackMessage(new CustomDialogSequence(Combat, SideStack, false))
                     );
             } else {
-                //LogDebug("Existing dialog sequence exists, skipping creation.");
+                //modLog.("Existing dialog sequence exists, skipping creation.");
             }
         }
 
@@ -52,10 +52,10 @@ namespace PanicSystem.Components.IRBTModUtilsCustomDialog {
 
             if (CallSigns == null) {
                 string filePath = Path.Combine(PanicSystem.modDirectory, PanicSystem.modSettings.Dialogue.CallsignsPath);
-                //LogDebug($"Reading files from {filePath}");
+                //modLog.($"Reading files from {filePath}");
                 CallSigns = File.ReadAllLines(filePath).ToList();
             }
-            //LogDebug($"Callsign count is: {CallSigns.Count}");
+            //modLog.($"Callsign count is: {CallSigns.Count}");
 
         }
 
@@ -78,13 +78,13 @@ namespace PanicSystem.Components.IRBTModUtilsCustomDialog {
 
             string employerFactionName = "Military Support";
             if (factionExists) {
-                //LogDebug($"Found factionDef for id:{actorFaction}");
+                //modLog.($"Found factionDef for id:{actorFaction}");
                 string factionId = actorFaction?.FactionDefID;
                 FactionDef employerFactionDef = UnityGameInstance.Instance.Game.DataManager.Factions.Get(factionId);
-                if (employerFactionDef == null) { /*LogDebug($"Error finding FactionDef for faction with id '{factionId}'");*/ }
+                if (employerFactionDef == null) { /*modLog.($"Error finding FactionDef for faction with id '{factionId}'");*/ }
                 else { employerFactionName = employerFactionDef.Name.ToUpper(); }
             } else {
-                //LogDebug($"FactionDefID does not exist for faction: {actorFaction}");
+                //modLog.($"FactionDefID does not exist for faction: {actorFaction}");
             }
 
             CastDef newCastDef = new CastDef {
@@ -102,17 +102,17 @@ namespace PanicSystem.Components.IRBTModUtilsCustomDialog {
             string portraitPath = GetRandomPortraitPath();
             newCastDef.defaultEmotePortrait.portraitAssetPath = portraitPath;
             if (actor.GetPilot() != null) {
-                //LogDebug("Actor has a pilot, using pilot values.");
+                //modLog.("Actor has a pilot, using pilot values.");
                 Pilot pilot = actor.GetPilot();
                 newCastDef.callsign = pilot.Callsign;
 
                 // Hide the faction name if it's the player's mech
                 if (actor.team.IsLocalPlayer) { newCastDef.showFirstName = false; }
             } else {
-                //LogDebug("Actor is not piloted, generating castDef.");
+                //modLog.("Actor is not piloted, generating castDef.");
                 newCastDef.callsign = GetRandomCallsign();
             }
-            //LogDebug($" Generated cast with callsign: {newCastDef.callsign} and DisplayName: {newCastDef.DisplayName()} using portrait: '{portraitPath}'");
+            //modLog.($" Generated cast with callsign: {newCastDef.callsign} and DisplayName: {newCastDef.DisplayName()} using portrait: '{portraitPath}'");
 
             ((DictionaryStore<CastDef>)UnityGameInstance.BattleTechGame.DataManager.CastDefs).Add(newCastDef.id, newCastDef);
 

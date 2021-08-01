@@ -22,12 +22,12 @@ namespace PanicSystem.Patches
         {
             if (__instance == null)
             {
-                LogDebug("No vehicle");
+                modLog.LogReport("No vehicle");
                 return;
             }
-            LogReport($"\n{new string('^', 46)}");
+            modLog.LogReport($"\n{new string('^', 46)}");
             string wname = (weapon != null) ? (weapon.Name ?? "null") : "null";
-            LogReport($"{__instance.DisplayName} :{__instance.GUID } took Damage from {wname} - {damageType.ToString()}");
+            modLog.LogReport($"{__instance.DisplayName} :{__instance.GUID } took Damage from {wname} - {damageType.ToString()}");
             DamageHandler.ProcessDamage(__instance, damageAmount, directStructureDamage, 0);
         }
     }

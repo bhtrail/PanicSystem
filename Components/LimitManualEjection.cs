@@ -29,22 +29,22 @@ namespace PanicSystem.Components
             var intersectingTags = modSettings.LimitManualEjectionTags.Intersect(actor.GetPilot().pilotDef.PilotTags).ToList();
             if (intersectingTags.Any())
             {
-                LogDebug("TAG EXCLUSION");
+                modLog.LogReport("TAG EXCLUSION");
                 intersectingTags.Do(x =>
                 {
-                    LogDebug($"\t{x}");
+                    modLog.LogReport($"\t{x}");
                     Message($"Can't - {x}");
                 });
             }
             else if (modSettings.LimitManualEjection &&
                      TrackedActors[GetActorIndex(actor)].PanicStatus <= (PanicStatus) modSettings.LimitManualEjectionLevel)
             {
-                LogDebug("STATUS EXCLUSION");
+                modLog.LogReport("STATUS EXCLUSION");
                 Message($"NOT WORSE THAN {modSettings.PanicStates[(int) modSettings.LimitManualEjectionLevel]}!");
             }
             else
             {
-                LogDebug("REGULAR EJECT");
+                modLog.LogReport("REGULAR EJECT");
                 var stackSequence = new EjectSequence(actor, false);
                 PublishStackSequence(combatGameState.MessageCenter, stackSequence, this);
             }
@@ -84,8 +84,8 @@ namespace PanicSystem.Components
             codes[index - 1].opcode = OpCodes.Nop;
             // inject new instructions
             codes.InsertRange(index, stack);
-            //LogDebug("CreateConfirmationOrders after transpiler:");
-            //codes.Do(x => LogDebug($"{x.opcode,-30}{x.operand}"));
+            //modLog.LogReport("CreateConfirmationOrders after transpiler:");
+            //codes.Do(x => modLog.LogReport($"{x.opcode,-30}{x.operand}"));
             return codes.AsEnumerable();
         }
     }
