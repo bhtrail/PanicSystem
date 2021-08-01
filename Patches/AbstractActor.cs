@@ -28,7 +28,7 @@ namespace PanicSystem.Patches
                 Logger.LogDebug($"No pilot found for {__instance.Nickname}:{__instance.GUID}");
                 return;
             }
-
+            Logger.LogDebug($"Processing {__instance.Nickname}:{__instance.GUID}");
             if (pilot.StatCollection.GetValue<float>("BleedingRate") > 0)
             {
                 Logger.LogDebug($"Pilot is bleeding, forcing panic check here.");

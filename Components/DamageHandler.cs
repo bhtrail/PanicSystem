@@ -50,7 +50,7 @@ namespace PanicSystem.Components
 
                 tryGetValue = playerMechStatsType.GetMethod("TryGetValue", AccessTools.all);
 
-                incrementKillCount = mechCombatStatsType.GetMethod("IncrementKillCount", AccessTools.all);
+                incrementKillCount = mechCombatStatsType?.GetMethod("IncrementKillCount", AccessTools.all);
 
                 if (tryGetValue is null)
                     LogError("tryGetValue is null");
@@ -120,18 +120,18 @@ namespace PanicSystem.Components
 
             AbstractActor attacker = TurnDamageTracker.attackActor();
             LogReport($"\n{new string('═', 46)}");
-            LogReport($"Damage to {actor.DisplayName}/{actor.Nickname}/{actor.GUID}");
-            LogReport($"Damage by {attacker.DisplayName}/{attacker.Nickname}/{attacker.GUID}");
+            LogReport($"Damage to {actor?.DisplayName}/{actor?.Nickname}/{actor?.GUID}");
+            LogReport($"Damage by {attacker?.DisplayName}/{attacker?.Nickname}/{attacker?.GUID}");
 
             // get the attacker in case they have mech quirks
             AbstractActor defender = null;
             switch (actor)
             {
-                case Vehicle _:
-                    defender = (Vehicle)actor;
+                case Vehicle vehicle:
+                    defender = vehicle;
                     break;
-                case Mech _:
-                    defender = (Mech)actor;
+                case Mech mech:
+                    defender = mech;
                     break;
             }
 
@@ -261,14 +261,14 @@ namespace PanicSystem.Components
             }
 
             //handle weird cases due to damage from all sources
-            if (attacker.GUID == defender.GUID)
+            if (attacker?.GUID == defender.GUID)
             {
                 //killed himself - possibly mines or made a building land on his own head ;)
                 LogReport("Self Kill not counting");
                 return;
             }
 
-            if (attacker.team.GUID == defender.team.GUID)
+            if (attacker?.team?.GUID == defender.team?.GUID)
             {
                 //killed a friendly
                 LogReport("Friendly Fire, Same Team Kill, not counting");
@@ -284,7 +284,7 @@ namespace PanicSystem.Components
             {
                 // this seems pretty convoluted
                 var attackerPilot = combat.AllMechs.Where(mech => mech.pilot.Team.IsLocalPlayer)
-                    .Where(x => x.PilotableActorDef == attacker.PilotableActorDef).Select(y => y.pilot).FirstOrDefault();
+                    .Where(x => x.PilotableActorDef == attacker?.PilotableActorDef).Select(y => y.pilot).FirstOrDefault();
 
                 var statCollection = attackerPilot?.StatCollection;
                 if (statCollection == null)

@@ -42,7 +42,8 @@ namespace PanicSystem
 
                     using (var writer = new StreamWriter(LogFilePath, true))
                     {
-                        writer.WriteLine($" {input ?? "null"}");
+                        string ts = DateTime.Now.ToString("s", System.Globalization.CultureInfo.InvariantCulture);
+                        writer.WriteLine($" {ts}: {input ?? "null"}");
                     }
                 }
                 catch (Exception ) { }
