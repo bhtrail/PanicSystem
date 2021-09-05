@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using BattleTech;
 using UnityEngine;
+using static PanicSystem.Logger;
+
 
 // HUGE thanks to RealityMachina and mpstark for their work, outstanding.
 namespace PanicSystem.Components
@@ -52,7 +54,7 @@ namespace PanicSystem.Components
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogDebug(ex);
+                    LogError(ex);
                 }
             }
         }

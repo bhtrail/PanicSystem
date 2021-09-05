@@ -22,22 +22,28 @@ namespace PanicSystem.Patches
     {
         public static void Prefix(AbstractActor __instance)
         {
+            var pilot = __instance.GetPilot();
+            if (pilot == null)
+            {
+                modLog.LogReport($"No pilot found for {__instance.Nickname}:{__instance.GUID}");
+                return;
+            }
+            modLog.LogReport($"Processing {__instance.Nickname}:{__instance.GUID}");
+            if (pilot.StatCollection.GetValue<float>("BleedingRate") > 0)
+            {
+                modLog.LogReport($"Pilot is bleeding, forcing panic check here.");
+                DamageHandler.ProcessBatchedTurnDamage(__instance);
+            }
+
             TurnDamageTracker.completedTurnFor(__instance);
             if (__instance.IsDead || __instance.IsFlaggedForDeath && __instance.HasHandledDeath)
             {
                 return;
             }
 
-            var pilot = __instance.GetPilot();
-            if (pilot == null)
-            {
-                Logger.LogDebug($"No pilot found for {__instance.Nickname}:{__instance.GUID}");
-                return;
-            }
-
             var index = GetActorIndex(__instance);
 
-            Logger.LogDebug($"Checking pilot panic for {__instance.Nickname}:{__instance.GUID} recent panic{TrackedActors[index].PanicWorsenedRecently} {TrackedActors[index].PanicStatus}" +
+            modLog.LogReport($"Checking pilot panic for {__instance.Nickname}:{__instance.GUID} recent panic{TrackedActors[index].PanicWorsenedRecently} {TrackedActors[index].PanicStatus}" +
                 $" Health:{Helpers.ActorHealth(__instance):F3}% v/s {(modSettings.MechHealthForCrit + (((int) TrackedActors[index].PanicStatus) * 10))} " +
                 $"Alone:{__instance.Combat.GetAllAlliesOf(__instance).TrueForAll(m => m.IsDead || m == __instance)}");
 
@@ -47,7 +53,7 @@ namespace PanicSystem.Patches
             if (!TrackedActors[index].PanicWorsenedRecently &&
                 TrackedActors[index].PanicStatus > PanicStatus.Confident && Helpers.ActorHealth(__instance)> (modSettings.MechHealthForCrit+(((int)TrackedActors[index].PanicStatus)*10)) && !__instance.Combat.GetAllAlliesOf(__instance).TrueForAll(m => m.IsDead || m == __instance))
             {
-                Logger.LogDebug($"Improving pilot panic for {__instance.Nickname}:{__instance.GUID}");
+                modLog.LogReport($"Improving pilot panic for {__instance.Nickname}:{__instance.GUID}");
                 TrackedActors[index].PanicStatus--;
             }
 

@@ -10,57 +10,40 @@ using static PanicSystem.PanicSystem;
 
 namespace PanicSystem
 {
-    public class Logger
+    internal class Logger
     {
-        private const string LOGGER_NAME = "PanicSystem";
+        private static StreamWriter logStreamWriter;
+        public Logger(string modDir, string fileName)
+        {
+            string filePath = Path.Combine(modDir, $"{fileName}.log");
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
 
-        private static string LogFilePath => Path.Combine(modDirectory, "log.txt");
+            logStreamWriter = File.AppendText(filePath);
+            logStreamWriter.AutoFlush = true;
+        }
 
-        private static ILog logger = HBS.Logging.Logger.GetLogger(LOGGER_NAME, LogLevel.Error);
-
-        public static void LogReport(object line)
+        public void LogReport(object line)
         {
             if (modSettings.CombatLog)
             {
                 try
                 {
-                    using (var writer = new StreamWriter(LogFilePath, true))
-                    {
-                        writer.WriteLine($"{line}");
-                    }
+                    string ts = DateTime.Now.ToString("s", System.Globalization.CultureInfo.InvariantCulture);
+                    logStreamWriter.WriteLine($"REPORT {ts}: {line ?? "null"}");
                 }
-                catch (Exception) { }
-            }
-        }
-
-        internal static void LogDebug(object input)
-        {
-            if (modSettings.CombatLog)
-            {
-                try
+                catch (Exception exception)
                 {
-                    using (var writer = new StreamWriter(LogFilePath, true))
-                    {
-                        writer.WriteLine($" {input ?? "null"}");
-                    }
+                    LogError(exception);
                 }
-                catch (Exception ) { }
             }
-
-            if (modSettings.Debug)
-            {
-                FileLog.Log($"[PanicSystem] {input ?? "null"}");
-            }
-        }
-      
-        public static void LogError(object message, Exception exception)
-        {
-            logger.LogError(message, exception);
         }
 
         public static void LogError(object message)
         {
-            logger.LogError(message);
+            Logger.LogError(message);
         }
 
         private static List<string> loggedactors = new List<string>();
@@ -81,7 +64,7 @@ namespace PanicSystem
                         if (loggedactors.Count > 100)
                         {
                             loggedactors.Clear();
-                            LogDebug("ACTOR LOG HISTORY CLEARED");
+                            modLog.LogReport("ACTOR LOG HISTORY CLEARED");
                         }
                     }
 
@@ -104,10 +87,12 @@ namespace PanicSystem
                             {
                                 can_eject_tag = "Has pilot_cannot_eject tag";
                             }
+
                             if (p.StatCollection.GetValue<bool>("CanEject"))
                             {
                                 can_eject_stat = "Has CanEject stat";
                             }
+
                             List<MechComponent> cs = actor.allComponents;
                             foreach (MechComponent c in cs)
                             {
@@ -116,19 +101,20 @@ namespace PanicSystem
                         }
                     }
 
-                    string input = $"ACTOR {actor.GUID}-{actor.DisplayName}-{actor.DisplayName} / {pilotable} / {can_eject} / {can_eject_tag} / {can_eject_stat}";
+                    string input =
+                        $"ACTOR {actor.GUID}-{actor.DisplayName}-{actor.DisplayName} / {pilotable} / {can_eject} / {can_eject_tag} / {can_eject_stat}";
                     if (actor.IsPilotable && actor.GetPilot() != null && actor.GetPilot().CanEject == false)
                     {
                         input = $"{input}\r\n{pilotdesc}\r\n{actordesc}";
                     }
-                    using (var writer = new StreamWriter(LogFilePath, true))
-                    {
-                        writer.WriteLine($" {input ?? "null"}");
-                    }
 
+                    logStreamWriter.WriteLine($" {input ?? "null"}");
                 }
             }
-            catch (Exception) { }
+            catch (Exception exception)
+            {
+                LogError(exception);
+            }
         }
     }
 }

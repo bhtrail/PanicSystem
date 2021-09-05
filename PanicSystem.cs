@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using BattleTech.ModSupport;
 using Harmony;
 using Newtonsoft.Json;
 using PanicSystem.Components.IRBTModUtilsCustomDialog;
@@ -19,11 +20,14 @@ namespace PanicSystem
         internal static string activeJsonPath; //store current tracker here
         internal static string storageJsonPath; //store our meta trackers here
         internal static string modDirectory;
+        internal static Logger modLog;
         internal static List<string> ejectPhraseList = new List<string>();
         internal static HarmonyInstance harmony;
 
         public static void Init(string modDir, string settings)
         {
+            modDirectory = modDir;
+            modLog = new Logger(modDir, "PanicSystem");
             try
             {
                 harmony = HarmonyInstance.Create("com.BattleTech.PanicSystem");
@@ -36,7 +40,7 @@ namespace PanicSystem
                 }
                 catch (Exception ex)
                 {
-                    LogDebug(ex);
+                    modLog.LogReport(ex);
                     modSettings = new Settings();
                 }
 
@@ -53,18 +57,19 @@ namespace PanicSystem
                     }
                     catch (Exception e)
                     {
-                        LogDebug("Failed to read callsigns from BT directory!");
-                        LogDebug(e);
+                        modLog.LogReport("Failed to read callsigns from BT directory!");
+                        modLog.LogReport(e);
                         Coordinator.CallSigns = new List<string> { "Alpha", "Beta", "Gamma" };
                     }
                 }
 
                 harmony.PatchAll();
                 Helpers.SetupEjectPhrases(modDir);
+                modLog.LogReport($"Initializing PanicSystem - Version {typeof(Settings).Assembly.GetName().Version}");
             }
             catch (Exception ex)
             {
-                LogDebug(ex);
+                modLog.LogReport(ex);
                 throw ex;
             }
         }

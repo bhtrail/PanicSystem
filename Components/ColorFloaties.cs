@@ -58,7 +58,7 @@ namespace PanicSystem.Components
             }
             catch (Exception ex)
             {
-                LogDebug(ex);
+                LogError(ex);
             }
         }
     }

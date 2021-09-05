@@ -24,12 +24,12 @@ namespace PanicSystem.Components
             LogActor(actor,false);
             if (actor != attacker)
             {
-                LogReport($"new Turn Activation for {actor.Nickname} - {actor.DisplayName} - {actor.GUID}");
+                modLog.LogReport($"new Turn Activation for {actor.Nickname} - {actor.DisplayName} - {actor.GUID}");
                 attacker = actor;
             }
             else
             {
-                LogReport($"new Turn Re-Activation for {actor.Nickname}");
+                modLog.LogReport($"new Turn Re-Activation for {actor.Nickname}");
             }
         }
 
@@ -40,7 +40,7 @@ namespace PanicSystem.Components
             if (!activationVictims.Contains(actor))
             {
                 activationVictims.Add(actor);
-                LogReport($"{actor.DisplayName}|{actor.Nickname}|{actor.GUID} added to victims. [{activationVictims.Count}]");
+                modLog.LogReport($"{actor.DisplayName}|{actor.Nickname}|{actor.GUID} added to victims. [{activationVictims.Count}]");
             }
             if (!turnExternalHeatAccumulator.ContainsKey(actor.GUID))
             {//got here without a new turn for defender use max values for struc/armor
@@ -55,7 +55,7 @@ namespace PanicSystem.Components
         {
             if (attacker != null)
             {
-                LogReport($"completed Turn Activation for {actor.Nickname} - {actor.DisplayName} - {actor.GUID} -victims [{activationVictims.Count}]");
+                modLog.LogReport($"completed Turn Activation for {actor.Nickname} - {actor.DisplayName} - {actor.GUID} -victims [{activationVictims.Count}]");
                 foreach (AbstractActor v in activationVictims)
                 {
                     DamageHandler.ProcessBatchedTurnDamage(v);
@@ -89,12 +89,12 @@ namespace PanicSystem.Components
             }
             else
             {
-                LogReport("Not mech or vehicle");
+                modLog.LogReport("Not mech or vehicle");
                 turnStartStructure[actor.GUID] = 0;
                 turnStartArmor[actor.GUID] = 0;
             }
 
-            LogReport($"Damage Levels reset for {actor.Nickname} - {actor.DisplayName} - {actor.GUID} -H:{turnExternalHeatAccumulator[actor.GUID]} A:{turnStartArmor[actor.GUID]} S:{turnStartStructure[actor.GUID]}");
+            modLog.LogReport($"Damage Levels reset for {actor.Nickname} - {actor.DisplayName} - {actor.GUID} -H:{turnExternalHeatAccumulator[actor.GUID]} A:{turnStartArmor[actor.GUID]} S:{turnStartStructure[actor.GUID]}");
 
         }
 
@@ -103,7 +103,7 @@ namespace PanicSystem.Components
         {
             if (attacker != null)
             {
-                LogReport($"attack was completed for {attacker.Nickname} - {attacker.DisplayName} - {attacker.GUID} ({reason}) -victims [{activationVictims.Count}]");
+                modLog.LogReport($"attack was completed for {attacker.Nickname} - {attacker.DisplayName} - {attacker.GUID} ({reason}) -victims [{activationVictims.Count}]");
                 foreach (AbstractActor actor in activationVictims)
                 {
                     DamageHandler.ProcessBatchedTurnDamage(actor);
@@ -119,7 +119,7 @@ namespace PanicSystem.Components
 
         internal static void firstTurnFor(AbstractActor actor)
         {
-            LogReport($"first Turn for {actor.Nickname}  - {actor.DisplayName} - {actor.GUID}");
+            modLog.LogReport($"first Turn for {actor.Nickname}  - {actor.DisplayName} - {actor.GUID}");
             turnExternalHeatAccumulator[actor.GUID]=0;//external heat 0 start of turn
             if (actor is Mech mech)
             {
@@ -140,7 +140,7 @@ namespace PanicSystem.Components
             }
             else
             {
-                LogReport("Not mech or vehicle");
+                modLog.LogReport("Not mech or vehicle");
                 turnStartStructure[actor.GUID]= 0;
                 turnStartArmor[actor.GUID]=0;
             }
@@ -152,17 +152,17 @@ namespace PanicSystem.Components
         {
             if (!ejectedActors.Contains(a.GUID))
             {
-                LogReport($"{a.Nickname} - {a.DisplayName} - {a.GUID} ejection !");
+                modLog.LogReport($"{a.Nickname} - {a.DisplayName} - {a.GUID} ejection !");
                 ejectedActors.Add(a.GUID);
                 return false;
             }
-            LogReport($"{a.Nickname} - {a.DisplayName} - {a.GUID} ejection already counted! DUPLICATE CAUGHT!!!");
+            modLog.LogReport($"{a.Nickname} - {a.DisplayName} - {a.GUID} ejection already counted! DUPLICATE CAUGHT!!!");
             return true;
         }
 
         internal static void Reset()
         {
-            LogReport($"Turn Damage Tracker Reset - new Mission");
+            modLog.LogReport($"Turn Damage Tracker Reset - new Mission");
             turnStartArmor = new Dictionary<string, float>();
             turnStartStructure = new Dictionary<string, float>();
             turnExternalHeatAccumulator = new Dictionary<string, int>();
@@ -199,7 +199,7 @@ namespace PanicSystem.Components
             {
                 structureDamage = 0;
                 armorDamage = 0;
-                LogReport("Not mech or vehicle");
+                modLog.LogReport("Not mech or vehicle");
             }
         }
     }

@@ -41,7 +41,7 @@ namespace PanicSystem.Components
             }
             catch (Exception ex)
             {
-                LogDebug(ex);
+                LogError(ex);
             }
         }
 
@@ -148,7 +148,7 @@ namespace PanicSystem.Components
                 }
                 catch (Exception ex)
                 {
-                    LogDebug(ex);
+                    LogError(ex);
                 }
             }
         }
@@ -165,8 +165,8 @@ namespace PanicSystem.Components
             }
             catch (Exception ex)
             {
-                //LogDebug("DeserializeStorageJson");
-                LogDebug(ex.Message);
+                //modLog.("DeserializeStorageJson");
+                LogError(ex);
             }
 
             if (trackers == null)
@@ -192,8 +192,8 @@ namespace PanicSystem.Components
             }
             catch (Exception ex)
             {
-                LogDebug("SaveTrackedPilots");
-                LogDebug(ex);
+                modLog.LogReport("SaveTrackedPilots");
+                LogError(ex);
             }
         }
 
@@ -217,8 +217,8 @@ namespace PanicSystem.Components
             }
             catch (Exception ex)
             {
-                LogDebug("DeserializeActiveJson");
-                LogDebug(ex);
+                modLog.LogReport("DeserializeActiveJson");
+                LogError(ex);
             }
 
             if (panicTrackers == null)
@@ -237,13 +237,13 @@ namespace PanicSystem.Components
             {
                 if (actor == null)
                 {
-                    LogDebug("actor is null");
+                    modLog.LogReport("actor is null");
                     return -1;
                 }
 
                 if (TrackedActors == null)
                 {
-                    LogDebug("DeserializeActiveJson");
+                    modLog.LogReport("DeserializeActiveJson");
                     DeserializeActiveJson();
                 }
 

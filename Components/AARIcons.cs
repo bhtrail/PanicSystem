@@ -1,10 +1,12 @@
 using System;
 using System.Linq;
 using BattleTech;
+using BattleTech.ModSupport;
 using Harmony;
 using UnityEngine;
 using UnityEngine.UI;
 using static PanicSystem.Logger;
+using static PanicSystem.PanicSystem;
 
 // ReSharper disable UnusedMember.Global
 // ReSharper disable InconsistentNaming
@@ -18,7 +20,7 @@ namespace PanicSystem.Components
             var r= unitResult.pilot.StatCollection.GetStatistic("MechsEjected") == null
                 ? 0
                 : unitResult.pilot.StatCollection.GetStatistic("MechsEjected").Value<int>();
-            LogDebug($"{unitResult.pilot.Callsign} GetMechEjectionCount {r}");
+            modLog.LogReport($"{unitResult.pilot.Callsign} GetMechEjectionCount {r}");
             return r;
         }
 
@@ -27,7 +29,7 @@ namespace PanicSystem.Components
             var r= unitResult.pilot.StatCollection.GetStatistic("VehiclesEjected") == null
                 ? 0
                 : unitResult.pilot.StatCollection.GetStatistic("VehiclesEjected").Value<int>();
-            LogDebug($"{unitResult.pilot.Callsign} GetVehicleEjectionCount {r}");
+            modLog.LogReport($"{unitResult.pilot.Callsign} GetVehicleEjectionCount {r}");
             return r;
         }
 
@@ -50,7 +52,7 @@ namespace PanicSystem.Components
             }
             catch (Exception ex)
             {
-                LogDebug(ex);
+                LogError(ex);
             }
         }
 
@@ -66,7 +68,7 @@ namespace PanicSystem.Components
             }
             catch (Exception ex)
             {
-                LogDebug(ex);
+                LogError(ex);
             }
         }
     }

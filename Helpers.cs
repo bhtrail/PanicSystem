@@ -54,10 +54,10 @@ namespace PanicSystem
             }
             else
             {
-                LogReport("Not mech or vehicle");
+                modLog.LogReport("Not mech or vehicle");
                 return ah;
             }
-            LogReport($"ActorHealth {actor.Nickname} - {actor.DisplayName} - {actor.GUID} -{ah:F3}%");
+            modLog.LogReport($"ActorHealth {actor.Nickname} - {actor.DisplayName} - {actor.GUID} -{ah:F3}%");
             return ah;
         }
 
@@ -72,13 +72,13 @@ namespace PanicSystem
                 Statistic stat = mech.StatCollection.GetStatistic(mech.GetStringForArmorLocation((ArmorLocation)Location));
                 if (stat == null)
                 {
-                    LogDebug($"Can't get armor stat  { mech.DisplayName } location:{ Location.ToString()}");
+                    modLog.LogReport($"Can't get armor stat  { mech.DisplayName } location:{ Location.ToString()}");
                     return 0;
                 }
-                //LogDebug($"armor stat  { mech.DisplayName } location:{ Location.ToString()} :{stat.DefaultValue<float>()}");
+                //modLog.LogReport($"armor stat  { mech.DisplayName } location:{ Location.ToString()} :{stat.DefaultValue<float>()}");
                 return stat.DefaultValue<float>();
             }
-            LogDebug($"Mech null");
+            modLog.LogReport($"Mech null");
             return 0;
         }
         public static float MaxStructureForLocation(Mech mech, int Location)
@@ -88,13 +88,13 @@ namespace PanicSystem
                 Statistic stat = mech.StatCollection.GetStatistic(mech.GetStringForStructureLocation((ChassisLocations)Location));
                 if (stat == null)
                 {
-                    LogDebug($"Can't get structure stat  { mech.DisplayName } location:{ Location.ToString()}");
+                    modLog.LogReport($"Can't get structure stat  { mech.DisplayName } location:{ Location.ToString()}");
                     return 0;
                 }
-                //LogDebug($"structure stat  { mech.DisplayName } location:{ Location.ToString()}:{stat.DefaultValue<float>()}");
+                //modLog.LogReport($"structure stat  { mech.DisplayName } location:{ Location.ToString()}:{stat.DefaultValue<float>()}");
                 return stat.DefaultValue<float>();
             }
-            LogDebug($"Mech null");
+            modLog.LogReport($"Mech null");
             return 0;
         }
 
@@ -105,13 +105,13 @@ namespace PanicSystem
                 Statistic stat = v.StatCollection.GetStatistic(v.GetStringForArmorLocation((VehicleChassisLocations)Location));
                 if (stat == null)
                 {
-                    LogDebug($"Can't get armor stat  { v.DisplayName } location:{ Location.ToString()}");
+                    modLog.LogReport($"Can't get armor stat  { v.DisplayName } location:{ Location.ToString()}");
                     return 0;
                 }
-                //LogDebug($"armor stat  { v.DisplayName } location:{ Location.ToString()} :{stat.DefaultValue<float>()}");
+                //modLog.LogReport($"armor stat  { v.DisplayName } location:{ Location.ToString()} :{stat.DefaultValue<float>()}");
                 return stat.DefaultValue<float>();
             }
-            LogDebug($"Vehicle null");
+            modLog.LogReport($"Vehicle null");
             return 0;
         }
         public static float MaxStructureForLocation(Vehicle v, int Location)
@@ -121,13 +121,13 @@ namespace PanicSystem
                 Statistic stat = v.StatCollection.GetStatistic(v.GetStringForStructureLocation((VehicleChassisLocations)Location));
                 if (stat == null)
                 {
-                    LogDebug($"Can't get structure stat  { v.DisplayName } location:{ Location.ToString()}");
+                    modLog.LogReport($"Can't get structure stat  { v.DisplayName } location:{ Location.ToString()}");
                     return 0;
                 }
-                //LogDebug($"structure stat  { mech.DisplayName } location:{ Location.ToString()}:{stat.DefaultValue<float>()}");
+                //modLog.LogReport($"structure stat  { mech.DisplayName } location:{ Location.ToString()}:{stat.DefaultValue<float>()}");
                 return stat.DefaultValue<float>();
             }
-            LogDebug($"Vehicle null");
+            modLog.LogReport($"Vehicle null");
             return 0;
         }
 
@@ -142,13 +142,13 @@ namespace PanicSystem
 		{
 			Statistic stat = mech.StatCollection.GetStatistic(mech.GetStringForArmorLocation((ArmorLocation)Location));
 			if(stat == null) {
-            			LogDebug($"Can't get armor stat  { mech.DisplayName } location:{ Location}");
+            			modLog.LogReport($"Can't get armor stat  { mech.DisplayName } location:{ Location}");
             			return 0;
           		}
 
-			//LogDebug($"Armor stat  { mech.DisplayName } location:{ Location} cur:{stat.Value<float>()} max:{stat.DefaultValue<float>()}");
+			//modLog.LogReport($"Armor stat  { mech.DisplayName } location:{ Location} cur:{stat.Value<float>()} max:{stat.DefaultValue<float>()}");
 //			if (mech.team.IsLocalPlayer)
-//                  LogReport($"Armor stat  { mech.DisplayName } location:{ Location} cur:{stat.Value<float>()} max:{stat.DefaultValue<float>()}");
+//                  modLog.LogReport($"Armor stat  { mech.DisplayName } location:{ Location} cur:{stat.Value<float>()} max:{stat.DefaultValue<float>()}");
 
                 float maxArmor = stat.DefaultValue<float>();
 
@@ -165,7 +165,7 @@ namespace PanicSystem
 
 			return percentArmor;
 		}
-		LogDebug($"Mech null");
+		modLog.LogReport($"Mech null");
 		return 0;
 	}
 
@@ -181,14 +181,14 @@ namespace PanicSystem
 			Statistic stat = mech.StatCollection.GetStatistic(mech.GetStringForStructureLocation((ChassisLocations)Location));
 			if(stat == null)
 			{
-            			LogDebug($"Can't get structure stat  { mech.DisplayName } location:{ Location}");
+            			modLog.LogReport($"Can't get structure stat  { mech.DisplayName } location:{ Location}");
             			return 0;
           		}
 
-			//LogDebug($"Structure stat  { mech.DisplayName } location:{ Location} cur:{stat.Value<float>()} max:{stat.DefaultValue<float>()}");
+			//modLog.LogReport($"Structure stat  { mech.DisplayName } location:{ Location} cur:{stat.Value<float>()} max:{stat.DefaultValue<float>()}");
 			return (stat.Value<float>() / stat.DefaultValue<float>());
 		}
-		LogDebug($"Mech null");
+		modLog.LogReport($"Mech null");
 		return 0;
 	}
 
@@ -214,14 +214,14 @@ namespace PanicSystem
  			}
 
 			percentLocation /= numAdditions;
-            LogReport($"{((ChassisLocations)LocationStructure).ToString(),-20} | A:{percentFront * 100,7:F3}% | S:{percentStructure * 100,7:F3}%");
+            modLog.LogReport($"{((ChassisLocations)LocationStructure).ToString(),-20} | A:{percentFront * 100,7:F3}% | S:{percentStructure * 100,7:F3}%");
             if (LocationBack != 0)
             {
-                LogReport($"{" ",-20} | [{percentBack * 100,7:F3}%] | ");
+                modLog.LogReport($"{" ",-20} | [{percentBack * 100,7:F3}%] | ");
             }
                 return percentLocation;
 		}
-		LogDebug($"Mech null");
+		modLog.LogReport($"Mech null");
 		return 0;
 	}
 
@@ -235,7 +235,7 @@ namespace PanicSystem
                 var ca = maxa;
                 if (maxs == 0 || maxa == 0)
                 {
-                    LogDebug($"Invalid location in vehicle {location.ToString()}");
+                    modLog.LogReport($"Invalid location in vehicle {location.ToString()}");
                     return 1;
                 }
 
@@ -262,7 +262,7 @@ namespace PanicSystem
                         ca = v.RearArmor;
                         break;
                     default:
-                        LogDebug($"Invalid location {location}");
+                        modLog.LogReport($"Invalid location {location}");
                         break;
                 }
 
@@ -279,10 +279,10 @@ namespace PanicSystem
                 // This emphasizes internal damage from a blow through (back armor gone or tandem weapons)
                 percentLocation += Math.Min(percentArmor, percentStructure);
                 percentLocation /= numAdditions;
-                LogReport($"{location.ToString(),-20} | A:{ca:F3}/{maxa:F3} = {percentArmor * 100,10}% , S:{cs:F3}/{maxs:F3} = {percentStructure * 100,10:F3}%");
+                modLog.LogReport($"{location.ToString(),-20} | A:{ca:F3}/{maxa:F3} = {percentArmor * 100,10}% , S:{cs:F3}/{maxs:F3} = {percentStructure * 100,10:F3}%");
                 return percentLocation;
             }
-            LogDebug($"Vehicle null");
+            modLog.LogReport($"Vehicle null");
             return 0;
         }
 
@@ -329,7 +329,7 @@ namespace PanicSystem
         {
             if (actor == null || actor.IsDead || actor.IsFlaggedForDeath && actor.HasHandledDeath)
             {
-                LogReport($"{attacker?.DisplayName} incapacitated {actor?.DisplayName}");
+                modLog.LogReport($"{attacker?.DisplayName} incapacitated {actor?.DisplayName}");
                 return false;
             }
 
@@ -358,9 +358,9 @@ namespace PanicSystem
 
         internal static void DrawHeader()
         {
-            LogReport(new string('-', 46));
-            LogReport($"{"Factors",-20} | {"Change",10} | {"Total",10}");
-            LogReport(new string('-', 46));
+            modLog.LogReport(new string('-', 46));
+            modLog.LogReport($"{"Factors",-20} | {"Change",10} | {"Total",10}");
+            modLog.LogReport(new string('-', 46));
         }
 
         internal static void SaySpamFloatie(AbstractActor actor, string message)
@@ -378,6 +378,13 @@ namespace PanicSystem
         // true implies a panic condition was met
         public static bool ShouldPanic(AbstractActor actor, AbstractActor attacker, out int heatdamage, out float damageIncludingHeatDamage)
         {
+            if (actor == attacker && actor.GetPilot().StatCollection.GetValue<float>("BleedingRate") > 0)
+            {
+                modLog.LogReport($"actor {actor.GetPilot().Callsign}.{actor.GUID} == attacker {attacker.GetPilot().Callsign}.{attacker.GUID}. should be bleeding at rate of {actor.GetPilot().StatCollection.GetValue<float>("BleedingRate")}.");
+                damageIncludingHeatDamage = 0;
+                heatdamage = 0;
+                return true;
+            }
             if (!CanPanic(actor, attacker))
             {
                 damageIncludingHeatDamage = 0;
@@ -431,8 +438,8 @@ namespace PanicSystem
 
             if (damageIncludingHeatDamage <= 0)//potentially negative if repairs happened.
             {
-                LogReport($"Damage >>> A: {armorDamage:F3}/{previousArmor:F3} S: {structureDamage:F3}/{previousStructure:F3} NA%) H: {heatdamage}");
-                LogReport("No damage");
+                modLog.LogReport($"Damage >>> A: {armorDamage:F3}/{previousArmor:F3} S: {structureDamage:F3}/{previousStructure:F3} NA%) H: {heatdamage}");
+                modLog.LogReport("No damage");
                 return false;
             }
 
@@ -440,10 +447,10 @@ namespace PanicSystem
             var percentDamageDone =
                 damageIncludingHeatDamage / (previousArmor + previousStructure) * 100;
 
-            LogReport($"Damage >>> A: {armorDamage:F3}/{previousArmor:F3} S: {structureDamage:F3}/{previousStructure:F3} ({percentDamageDone:F2}%) H: {heatdamage}");
+            modLog.LogReport($"Damage >>> A: {armorDamage:F3}/{previousArmor:F3} S: {structureDamage:F3}/{previousStructure:F3} ({percentDamageDone:F2}%) H: {heatdamage}");
             if (modSettings.AlwaysPanic)
             {
-                LogReport("AlwaysPanic");
+                modLog.LogReport("AlwaysPanic");
                 return true;
             }
 
@@ -453,17 +460,17 @@ namespace PanicSystem
                 actor is Vehicle &&
                 structureDamage >= modSettings.MinimumVehicleStructureDamageRequired))
             {
-                LogReport("Structure damage requires panic save");
+                modLog.LogReport("Structure damage requires panic save");
                 return true;
             }
 
             if (percentDamageDone <= modSettings.MinimumDamagePercentageRequired)
             {
-                LogReport("Not enough damage");
+                modLog.LogReport("Not enough damage");
                 return false;
             }
 
-            LogReport("Total damage requires a panic save");
+            modLog.LogReport("Total damage requires a panic save");
             return true;
         }
 
@@ -481,8 +488,8 @@ namespace PanicSystem
             }
             catch (Exception ex)
             {
-                LogReport("Error - problem loading phrases.txt but the setting is enabled");
-                LogDebug(ex);
+                modLog.LogReport("Error - problem loading phrases.txt but the setting is enabled");
+                modLog.LogReport(ex);
                 // in case the file is missing but the setting is enabled
                 modSettings.EnableEjectPhrases = false;
             }
@@ -509,7 +516,7 @@ namespace PanicSystem
             switch (panicStatus)
             {
                 case PanicStatus.Unsettled:
-                    LogReport($"{actor.DisplayName} {verb}{modSettings.PanicStates[1]}");
+                    modLog.LogReport($"{actor.DisplayName} {verb}{modSettings.PanicStates[1]}");
                     message.PublishMessage(new AddSequenceToStackMessage(
                         new ShowActorInfoSequence(actor,
                             $"{verb}{modSettings.PanicStates[1]}",
@@ -518,7 +525,7 @@ namespace PanicSystem
                     effectManager.CreateEffect(StatusEffect.UnsettledToHit, "PanicSystemToHit", Uid(), actor, actor, dummyWeapon, 0);
                     break;
                 case PanicStatus.Stressed:
-                    LogReport($"{actor.DisplayName} {verb}{modSettings.PanicStates[2]}");
+                    modLog.LogReport($"{actor.DisplayName} {verb}{modSettings.PanicStates[2]}");
                     message.PublishMessage(new AddSequenceToStackMessage(
                         new ShowActorInfoSequence(actor,
                             $"{verb}{modSettings.PanicStates[2]}",
@@ -528,7 +535,7 @@ namespace PanicSystem
                     effectManager.CreateEffect(StatusEffect.StressedToBeHit, "PanicSystemToBeHit", Uid(), actor, actor, dummyWeapon, 0);
                     break;
                 case PanicStatus.Panicked:
-                    LogReport($"{actor.DisplayName} {verb}{modSettings.PanicStates[3]}");
+                    modLog.LogReport($"{actor.DisplayName} {verb}{modSettings.PanicStates[3]}");
                     message.PublishMessage(new AddSequenceToStackMessage(
                         new ShowActorInfoSequence(actor,
                             $"{verb}{modSettings.PanicStates[3]}",
@@ -539,7 +546,7 @@ namespace PanicSystem
                     break;
 
                 default:
-                    LogReport($"{actor.DisplayName} {verb}{modSettings.PanicStates[0]}");
+                    modLog.LogReport($"{actor.DisplayName} {verb}{modSettings.PanicStates[0]}");
                     message.PublishMessage(new AddSequenceToStackMessage(
                         new ShowActorInfoSequence(actor,
                             $"{verb}{modSettings.PanicStates[0]}",
