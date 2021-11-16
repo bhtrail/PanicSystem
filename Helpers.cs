@@ -378,9 +378,9 @@ namespace PanicSystem
         // true implies a panic condition was met
         public static bool ShouldPanic(AbstractActor actor, AbstractActor attacker, out int heatdamage, out float damageIncludingHeatDamage)
         {
-            if (actor == attacker && actor.GetPilot().StatCollection.GetValue<float>("BleedingRate") > 0)
+            if (actor == attacker && actor.GetPilot().StatCollection.GetValue<float>("BleedingRate") * actor.GetPilot().StatCollection.GetValue<float>("BleedingRateMulti") > 0) 
             {
-                modLog.LogReport($"actor {actor.GetPilot().Callsign}.{actor.GUID} == attacker {attacker.GetPilot().Callsign}.{attacker.GUID}. should be bleeding at rate of {actor.GetPilot().StatCollection.GetValue<float>("BleedingRate")}.");
+                modLog.LogReport($"actor {actor.GetPilot().Callsign}.{actor.GUID} == attacker {attacker.GetPilot().Callsign}.{attacker.GUID}. should be bleeding at rate of {actor.GetPilot().StatCollection.GetValue<float>("BleedingRate")} x BleedingRateMulti {actor.GetPilot().StatCollection.GetValue<float>("BleedingRateMulti")}.");
                 damageIncludingHeatDamage = 0;
                 heatdamage = 0;
                 return true;

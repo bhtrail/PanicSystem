@@ -160,9 +160,9 @@ namespace PanicSystem.Components
                             modLog.LogReport($"{"Blood Level",-20} | {bloodMulti,10:F3} | {totalMultiplier,10:F3}");
                         }
                     }
-                    if (pilot.StatCollection.GetValue<float>("BleedingRate") > 0)
+                    if ((pilot.StatCollection.GetValue<float>("BleedingRate") * pilot.StatCollection.GetValue<float>("BleedingRateMulti")) > 0)
                     {
-                        var bleedRate = pilot.StatCollection.GetValue<float>("BleedingRate");
+                        var bleedRate = pilot.StatCollection.GetValue<float>("BleedingRate") * pilot.StatCollection.GetValue<float>("BleedingRateMulti");
                         var bleedRateMulti = modSettings.BleedRateFactor * bleedRate;
                         totalMultiplier += bleedRateMulti;
                         modLog.LogReport($"{"Bleeding Rate",-20} | {bleedRateMulti,10:F3} | {totalMultiplier,10:F3}");
