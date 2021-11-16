@@ -29,7 +29,7 @@ namespace PanicSystem.Patches
                 return;
             }
             modLog.LogReport($"Processing {__instance.Nickname}:{__instance.GUID}");
-            if (pilot.StatCollection.GetValue<float>("BleedingRate") > 0)
+            if ((pilot.StatCollection.GetValue<float>("BleedingRate") * pilot.StatCollection.GetValue<float>("BleedingRateMulti")) > 0)
             {
                 modLog.LogReport($"Pilot is bleeding, forcing panic check here.");
                 DamageHandler.ProcessBatchedTurnDamage(__instance);
