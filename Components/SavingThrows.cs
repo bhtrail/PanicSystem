@@ -58,6 +58,7 @@ namespace PanicSystem.Components
                 var index = GetActorIndex(defender);
                 float panicModifier = GetPanicModifier(TrackedActors[index].PanicStatus);
                 savingThrow *= panicModifier;
+                savingThrow *= actor.GetPanicMultiplier();
                 modLog.LogReport($"{"Panic multiplier",-20} | {panicModifier,10} | {savingThrow,10:F3}");
                 savingThrow = (float) Math.Max(0f, Math.Round(savingThrow));
 
@@ -437,7 +438,9 @@ namespace PanicSystem.Components
                 modLog.LogReport($"{"Base ejection resist",-20} | {modSettings.BaseEjectionResist,10} | {savingThrow,10:F3}");
             }
 
+            savingThrow *= actor.GetPanicMultiplier();
             savingThrow = (float) Math.Round(savingThrow);
+
             modLog.LogReport($"{"Eject multiplier",-20} | {modSettings.EjectChanceFactor,10} | {savingThrow,10:F3}");
             var roll = Random.Range(1, 100);
             modLog.LogReport(new string('-', 46));

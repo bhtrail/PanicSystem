@@ -18,6 +18,16 @@ using CustomAmmoCategoriesPatches;
 
 namespace PanicSystem
 {
+    public static class Util
+    {
+        public static float GetPanicMultiplier(this AbstractActor actor)
+        {
+            var mult = actor.StatCollection.GetValue<float>("PanicStatMultiplier");
+            modLog.LogReport($"Fetched final multiplier from actor: {mult}");
+            return mult;
+        }
+    }
+
     public class Helpers
     {
 

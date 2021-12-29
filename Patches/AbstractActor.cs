@@ -1,3 +1,4 @@
+using System;
 using BattleTech;
 using Harmony;
 using PanicSystem.Components;
@@ -8,6 +9,15 @@ using static PanicSystem.PanicSystem;
 
 namespace PanicSystem.Patches
 {
+    [HarmonyPatch(typeof(AbstractActor), "InitEffectStats", new Type[] { })]
+    public static class AbstractActor_InitEffectStats
+    {
+        public static void Postfix(AbstractActor __instance)
+        {
+            __instance.StatCollection.AddStatistic<float>("PanicStatMultiplier", 1f);
+        }
+    }
+
     [HarmonyPatch(typeof(AbstractActor), "OnActivationBegin")]
     public static class AbstractActor_OnActivationBegin_Patch
     {
