@@ -20,9 +20,12 @@ namespace PanicSystem.Components
                 void SetStyle(CombatHUDStatusStackItem floatie, Color32 inner, Color32 outline, float width = 0f)
                 {
                     var tmp = Traverse.Create(floatie).Field("Text").GetValue<TextMeshProUGUI>();
-                    Traverse.Create(tmp).Method("SetFaceColor", inner).GetValue();
-                    Traverse.Create(tmp).Method("SetOutlineColor", outline).GetValue();
-                    Traverse.Create(tmp).Method("SetOutlineThickness", width).GetValue();
+                    tmp.faceColor = inner;
+                    tmp.outlineColor = outline;
+                    tmp.outlineWidth = width;
+                    //Traverse.Create(tmp).Method("SetFaceColor", inner).GetValue();
+                    //Traverse.Create(tmp).Method("SetOutlineColor", outline).GetValue();
+                    //Traverse.Create(tmp).Method("SetOutlineThickness", width).GetValue();
                 }
 
                 var floaties = __instance.gameObject.GetComponentsInChildren<CombatHUDStatusStackItem>(true);
