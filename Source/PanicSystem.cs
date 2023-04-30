@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using Newtonsoft.Json;
 using PanicSystem.Components.IRBTModUtilsCustomDialog;
 using static PanicSystem.Logger;
@@ -19,13 +20,12 @@ public static class PanicSystem
     internal static string storageJsonPath; //store our meta trackers here
     internal static string modDirectory;
     internal static List<string> ejectPhraseList = new List<string>();
-    internal static HarmonyInstance harmony;
+    internal static Harmony harmony;
 
     public static void Init(string modDir, string settings)
     {
         try
-        {
-            harmony = HarmonyInstance.Create("com.BattleTech.PanicSystem");
+        {            
             modDirectory = modDir;
             activeJsonPath = Path.Combine(modDir, "PanicSystem.json");
             storageJsonPath = Path.Combine(modDir, "PanicSystemStorage.json");
@@ -61,8 +61,8 @@ public static class PanicSystem
                 }
                 //LogDebug($"Callsign count is: {Coordinator.CallSigns.Count}");
             }
-
-            harmony.PatchAll();
+            
+            harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), "com.BattleTech.PanicSystem");
             Helpers.SetupEjectPhrases(modDir);
         }
         catch (Exception ex)

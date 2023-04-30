@@ -7,6 +7,7 @@ using PanicSystem.Components;
 using static PanicSystem.Logger;
 using static PanicSystem.PanicSystem;
 using Random = UnityEngine.Random;
+using ShaderControl;
 #if NO_CAC
 #else
 using CustomAmmoCategoriesPatches;
@@ -549,13 +550,12 @@ public class Helpers
     }
 
     private static void ClearPanicEffects(AbstractActor actor, EffectManager effectManager)
-    {
-        var effects = Traverse.Create(effectManager).Field("effects").GetValue<List<Effect>>();
-        for (var i = 0; i < effects.Count; i++)
+    {        
+        foreach (BattleTech.Effect effect in effectManager.effects)        
         {
-            if (effects[i].id.StartsWith("PanicSystem") && Traverse.Create(effects[i]).Field("target").GetValue<object>() == actor)
+            if (effect.id.StartsWith("PanicSystem") && effect.target == actor)
             {
-                effectManager.CancelEffect(effects[i]);
+                effectManager.CancelEffect(effect);
             }
         }
     }

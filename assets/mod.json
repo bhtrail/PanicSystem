@@ -17,7 +17,12 @@
             "Type": "SVGAsset",
             "Path": "icons",
             "ShouldMergeJSON": false
-        }
+        },
+	{
+		"Type": "AdvancedJSONMerge",
+		"Path": "advancedjsonmerge",
+		"ShouldMergeJSON": false
+	}
     ],
     "Settings": {
         "Debug": false,

@@ -1,4 +1,4 @@
-﻿using System.IO;
+﻿using HBS.Logging;
 using static PanicSystem.PanicSystem;
 
 // ReSharper disable ClassNeverInstantiated.Global
@@ -7,17 +7,15 @@ namespace PanicSystem;
 
 public class Logger
 {
-    private static string LogFilePath => Path.Combine(modDirectory, "log.txt");
+    private static readonly ILog logger = HBS.Logging.Logger.GetLogger("PanicSystem");
 
     public static void LogReport(object line)
     {
         if (modSettings.CombatLog)
         {
-            using (var writer = new StreamWriter(LogFilePath, true))
-            {
-                writer.WriteLine($"{line}");
-            }
+            logger.Log(line);
         }
+
     }
 
     internal static void LogDebug(object input)
@@ -36,7 +34,7 @@ public class Logger
 
         if (modSettings.Debug)
         {
-            FileLog.Log($"[PanicSystem] {input ?? "null"}");
+            logger.LogDebug(input);
         }
     }
 }

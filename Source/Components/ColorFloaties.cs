@@ -16,18 +16,17 @@ public class ColorFloaties
         try
         {
             // default outline width is zero.  have to plug a dummy value into outline colour though...
-            void SetStyle(CombatHUDStatusStackItem floatie, Color32 inner, Color32 outline, float width = 0f)
+            static void SetStyle(CombatHUDStatusStackItem floatie, Color32 inner, Color32 outline, float width = 0f)
             {
-                var tmp = Traverse.Create(floatie).Field("Text").GetValue<TextMeshProUGUI>();
-                Traverse.Create(tmp).Method("SetFaceColor", inner).GetValue();
-                Traverse.Create(tmp).Method("SetOutlineColor", outline).GetValue();
-                Traverse.Create(tmp).Method("SetOutlineThickness", width).GetValue();
+                floatie.Text.faceColor= inner;
+                floatie.Text.outlineColor = outline;
+                floatie.Text.outlineWidth = width;
             }
 
             var floaties = __instance.gameObject.GetComponentsInChildren<CombatHUDStatusStackItem>(true);
             foreach (var floatie in floaties)
             {
-                var text = Traverse.Create(floatie).Field("Text").GetValue<TextMeshProUGUI>().text;
+                var text = floatie.Text.text;
                 if (text.Contains(PanicSystem.modSettings.PanicImprovedString))
                 {
                     SetStyle(floatie, Color.white, Color.blue, 0.1f);
