@@ -4,17 +4,16 @@ using System;
 
 // ReSharper disable InconsistentNaming
 
-namespace PanicSystem.Patches
+namespace PanicSystem.Patches;
+
+[HarmonyPatch(typeof(ActorMovementSequence))]
+[HarmonyPatch("CompleteOrders")]
+[HarmonyPatch(MethodType.Normal)]
+[HarmonyPatch(new Type[] { })]
+public static class ActorMovementSequence_CompleteOrders
 {
-    [HarmonyPatch(typeof(ActorMovementSequence))]
-    [HarmonyPatch("CompleteOrders")]
-    [HarmonyPatch(MethodType.Normal)]
-    [HarmonyPatch(new Type[] { })]
-    public static class ActorMovementSequence_CompleteOrders
+    public static void Postfix(ActorMovementSequence __instance)
     {
-        public static void Postfix(ActorMovementSequence __instance)
-        {
-                TurnDamageTracker.hintAttackComplete("ActorMovementSequence:CompleteOrders");
-        }
+            TurnDamageTracker.hintAttackComplete("ActorMovementSequence:CompleteOrders");
     }
 }

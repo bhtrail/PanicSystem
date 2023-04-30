@@ -1,39 +1,38 @@
 using System.Reflection;
 using static PanicSystem.Logger;
 
-namespace PanicSystem.Patches
+namespace PanicSystem.Patches;
+
+public class VehicleRepresentation
 {
-    public class VehicleRepresentation
+    private static MethodInfo originalPDF = null;
+    private static MethodInfo prefixPDF = null;
+    private static bool supressDeathFloatie = false;
+
+    public static void hookPDF()
     {
-        private static MethodInfo originalPDF = null;
-        private static MethodInfo prefixPDF = null;
-        private static bool supressDeathFloatie = false;
-
-        public static void hookPDF()
+        if (originalPDF == null)
         {
-            if (originalPDF == null)
-            {
-                LogReport($"hookPDF");
-                originalPDF = AccessTools.Method(typeof(BattleTech.VehicleRepresentation), "PlayDeathFloatie");
-                prefixPDF = AccessTools.Method(typeof(BattleTech.VehicleRepresentation), nameof(PrefixDeathFloatie));
-                PanicSystem.harmony.Patch(originalPDF, new HarmonyMethod(prefixPDF));
-                //PanicSystem.harmony.Unpatch(originalPDF, HarmonyPatchType.Prefix);
-            }
+            LogReport($"hookPDF");
+            originalPDF = AccessTools.Method(typeof(BattleTech.VehicleRepresentation), "PlayDeathFloatie");
+            prefixPDF = AccessTools.Method(typeof(BattleTech.VehicleRepresentation), nameof(PrefixDeathFloatie));
+            PanicSystem.harmony.Patch(originalPDF, new HarmonyMethod(prefixPDF));
+            //PanicSystem.harmony.Unpatch(originalPDF, HarmonyPatchType.Prefix);
         }
+    }
 
-        public static void supressDeathFloatieOnce()
-        {
-            supressDeathFloatie = true;
-        }
+    public static void supressDeathFloatieOnce()
+    {
+        supressDeathFloatie = true;
+    }
 
-        internal static bool PrefixDeathFloatie()
+    internal static bool PrefixDeathFloatie()
+    {
+        if (supressDeathFloatie)
         {
-            if (supressDeathFloatie)
-            {
-                supressDeathFloatie = false;
-                return false;
-            }
-            return true;
+            supressDeathFloatie = false;
+            return false;
         }
+        return true;
     }
 }
