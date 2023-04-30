@@ -1,6 +1,5 @@
 using System;
 using BattleTech.UI;
-using Harmony;
 using TMPro;
 using UnityEngine;
 using static PanicSystem.Logger;

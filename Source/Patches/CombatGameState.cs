@@ -1,8 +1,6 @@
 using BattleTech;
-using Harmony;
 using PanicSystem.Components;
 using System;
-using UnityEngine;
 
 // ReSharper disable InconsistentNaming
 

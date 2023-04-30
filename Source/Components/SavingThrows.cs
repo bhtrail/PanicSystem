@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using BattleTech;
-using PanicSystem.Patches;
 using static PanicSystem.PanicSystem;
 using static PanicSystem.Logger;
 using static PanicSystem.Components.Controller;

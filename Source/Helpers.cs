@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using BattleTech;
-using Harmony;
 using PanicSystem.Components;
 using static PanicSystem.Logger;
 using static PanicSystem.PanicSystem;

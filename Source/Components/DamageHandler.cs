@@ -3,18 +3,13 @@ using System.Collections;
 using System.Linq;
 using BattleTech;
 using BattleTech.Achievements;
-using Harmony;
-using HBS;
-using PanicSystem.Components;
 using PanicSystem.Components.IRBTModUtilsCustomDialog;
 using UnityEngine;
 using static PanicSystem.Logger;
 using static PanicSystem.PanicSystem;
 using static PanicSystem.Components.Controller;
 using static PanicSystem.Helpers;
-using PanicSystem.Patches;
 using Random = UnityEngine.Random;
-using System.Reflection;
 
 namespace PanicSystem.Components
 {

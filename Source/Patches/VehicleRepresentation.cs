@@ -1,6 +1,4 @@
-using Harmony;
 using System.Reflection;
-using PanicSystem;
 using static PanicSystem.Logger;
 
 namespace PanicSystem.Patches

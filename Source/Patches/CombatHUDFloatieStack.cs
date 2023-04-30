@@ -1,7 +1,6 @@
 using System;
 using BattleTech;
 using BattleTech.UI;
-using Harmony;
 using Localize;
 using PanicSystem.Components;
 using static PanicSystem.Logger;

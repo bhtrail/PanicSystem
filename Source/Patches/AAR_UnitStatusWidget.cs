@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Reflection.Emit;
 using BattleTech;
 using BattleTech.UI;
-using Harmony;
 using PanicSystem.Components;
 using UnityEngine;
 using static PanicSystem.Logger;

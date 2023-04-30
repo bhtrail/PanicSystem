@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.Collections.Generic;
 using BattleTech;
-using Newtonsoft.Json;
 using static PanicSystem.PanicSystem;
 using static PanicSystem.Logger;
 using static PanicSystem.Helpers;

@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using BattleTech;
-using Harmony;
 using UnityEngine;
 using UnityEngine.UI;
 using static PanicSystem.Logger;

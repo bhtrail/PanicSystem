@@ -1,7 +1,6 @@
 using BattleTech;
 using BattleTech.Save;
 using BattleTech.Save.SaveGameStructure;
-using Harmony;
 using static PanicSystem.Components.Controller;
 
 // ReSharper disable UnusedMember.Local

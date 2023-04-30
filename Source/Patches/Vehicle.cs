@@ -1,8 +1,5 @@
 using BattleTech;
-using Harmony;
 using System;
-using static PanicSystem.PanicSystem;
-using static PanicSystem.Components.Controller;
 using static PanicSystem.Logger;
 using PanicSystem.Components;
 

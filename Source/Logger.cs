@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using Harmony;
+﻿using System.IO;
 using static PanicSystem.PanicSystem;
 
 // ReSharper disable ClassNeverInstantiated.Global

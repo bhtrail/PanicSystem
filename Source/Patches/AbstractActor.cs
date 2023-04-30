@@ -1,5 +1,4 @@
 using BattleTech;
-using Harmony;
 using PanicSystem.Components;
 using static PanicSystem.Components.Controller;
 using static PanicSystem.PanicSystem;

@@ -1,0 +1,90 @@
+﻿<Project Sdk="Microsoft.Net.SDK" InitialTargets="ValidateBattleTechGameDir">
+	<Target Name="ValidateBattleTechGameDir" Condition="'$(BattleTechGameDir)' == '' Or !Exists('$(BattleTechGameDir)')">
+		<Error Text="BattleTechGameDir variable not set properly" />
+	</Target>
+
+	<PropertyGroup Condition="Exists('$(BattleTechGameDir)\Mods\Core\PanicSystem')">
+		<PanicSystemPath>$(BattleTechGameDir)\Mods\Core\PanicSystem</PanicSystemPath>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="Exists('$(BattleTechGameDir)\Mods\PanicSystem')">
+		<PanicSystemPath>$(BattleTechGameDir)\Mods\PanicSystem</PanicSystemPath>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(PanicSystemPath)' == ''">
+		<PanicSystemPath>$(MSBuildProjectDirectory)</PanicSystemPath>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<OutputType>Library</OutputType>
+		<TargetFramework>net472</TargetFramework>
+		<LangVersion>11</LangVersion>
+		<AssemblySearchPaths>
+			$(ReferencePath);
+			{HintPathFromItem};
+			$(BattleTechGameDir)\BattleTech_Data\Managed\
+		</AssemblySearchPaths>
+		<DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
+		<DebugType>none</DebugType>
+		<DebugSymbols>false</DebugSymbols>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<Target Name="CopyFilesToGame" AfterTargets="CopyFilesToOutputDirectory">
+		<Copy SourceFiles="$(TargetPath)" DestinationFolder="$(PanicSystemPath)" />
+	</Target>
+	<PropertyGroup>
+		<!-- avoids IgnoresAccessChecksToAttribute warnings -->
+		<PublicizerRuntimeStrategies>Unsafe</PublicizerRuntimeStrategies>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Krafs.Publicizer" Version="2.2.1" />
+		<Publicize Include="Assembly-CSharp" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="HarmonyX" Version="2.10.1">
+			<PrivateAssets>all</PrivateAssets>
+			<ExcludeAssets>runtime</ExcludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Reference Include="Assembly-CSharp">
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="Assembly-CSharp-firstpass">
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="Newtonsoft.Json">
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="DOTweenPro">
+			<Private>False</Private>
+		</Reference>		
+		<Reference Include="System">
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="System.Core">
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="System.Data">
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="Unity.TextMeshPro">
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="UnityEngine">
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="UnityEngine.CoreModule">
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="UnityEngine.UI">
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="CustomAmmoCategories">
+			<HintPath>$(PanicSystemPath)\..\CustomAmmoCategories\CustomAmmoCategories.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+	</ItemGroup>
+</Project>

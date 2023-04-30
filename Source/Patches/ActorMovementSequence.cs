@@ -1,8 +1,6 @@
 using BattleTech;
-using Harmony;
 using PanicSystem.Components;
 using System;
-using static PanicSystem.Components.Controller;
 
 // ReSharper disable InconsistentNaming
 

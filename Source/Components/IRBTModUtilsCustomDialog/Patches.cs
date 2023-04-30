@@ -1,12 +1,12 @@
 ﻿using System;
 using BattleTech;
 using BattleTech.UI;
-using Harmony;
 // ReSharper disable All
 
 // thank you Frosty IRBTModUtils CustomDialog
 // https://github.com/IceRaptor/IRBTModUtils
-namespace PanicSystem.Components.IRBTModUtilsCustomDialog {
+namespace PanicSystem.Components.IRBTModUtilsCustomDialog
+{
 
     // Register listeners for our events, using the CombatHUD hook
     [HarmonyPatch(typeof(CombatHUD), "SubscribeToMessages")]

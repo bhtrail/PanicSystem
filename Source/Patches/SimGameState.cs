@@ -1,5 +1,4 @@
 using BattleTech;
-using Harmony;
 using static PanicSystem.Components.Controller;
 
 // ReSharper disable UnusedMember.Local

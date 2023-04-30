@@ -2,7 +2,6 @@ using System;
 using System.Globalization;
 using System.Linq;
 using BattleTech;
-using Harmony;
 using SVGImporter;
 using static PanicSystem.PanicSystem;
 
