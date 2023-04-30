@@ -7,13 +7,19 @@ namespace PanicSystem;
 
 public class Logger
 {
-    private static readonly ILog logger = HBS.Logging.Logger.GetLogger("PanicSystem");
+    private static ILog logger; 
+
+
+    public static void Init()
+    {
+        logger = HBS.Logging.Logger.GetLogger("PanicSystem");
+    }
 
     public static void LogReport(object line)
     {
         if (modSettings.CombatLog)
         {
-            logger.Log(line);
+            logger?.Log(line);
         }
 
     }
@@ -34,7 +40,7 @@ public class Logger
 
         if (modSettings.Debug)
         {
-            logger.LogDebug(input);
+            logger?.LogDebug(input);
         }
     }
 }

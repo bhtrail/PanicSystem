@@ -6,7 +6,6 @@ using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json;
 using PanicSystem.Components.IRBTModUtilsCustomDialog;
-using static PanicSystem.Logger;
 
 // ReSharper disable InconsistentNaming
 
@@ -25,7 +24,8 @@ public static class PanicSystem
     public static void Init(string modDir, string settings)
     {
         try
-        {            
+        {
+            Logger.Init();
             modDirectory = modDir;
             activeJsonPath = Path.Combine(modDir, "PanicSystem.json");
             storageJsonPath = Path.Combine(modDir, "PanicSystemStorage.json");
@@ -35,7 +35,7 @@ public static class PanicSystem
             }
             catch (Exception ex)
             {
-                LogDebug(ex);
+                Logger.LogDebug(ex);
                 modSettings = new Settings();
             }
 
@@ -44,22 +44,22 @@ public static class PanicSystem
             // Try to determine the battletech directory
             string fileName = Process.GetCurrentProcess().MainModule.FileName;
             string btDir = Path.GetDirectoryName(fileName);
-            //LogDebug($"BT File is: {fileName} with btDir: {btDir}");
+            Logger.LogDebug($"BT File is: {fileName} with btDir: {btDir}");
             if (Coordinator.CallSigns == null)
             {
                 string filePath = Path.Combine(btDir, modSettings.Dialogue.CallsignsPath);
-                //LogDebug($"Reading files from {filePath}");
+                Logger.LogDebug($"Reading files from {filePath}");
                 try
                 {
                     Coordinator.CallSigns = File.ReadAllLines(filePath).ToList();
                 }
                 catch (Exception e)
                 {
-                    LogDebug("Failed to read callsigns from BT directory!");
-                    LogDebug(e);
+                    Logger.LogDebug("Failed to read callsigns from BT directory!");
+                    Logger.LogDebug(e);
                     Coordinator.CallSigns = new List<string> { "Alpha", "Beta", "Gamma" };
                 }
-                //LogDebug($"Callsign count is: {Coordinator.CallSigns.Count}");
+                Logger.LogDebug($"Callsign count is: {Coordinator.CallSigns.Count}");
             }
             
             harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), "com.BattleTech.PanicSystem");
@@ -67,7 +67,7 @@ public static class PanicSystem
         }
         catch (Exception ex)
         {
-            LogDebug(ex);
+            Logger.LogDebug(ex);
             throw ex;
         }
     }

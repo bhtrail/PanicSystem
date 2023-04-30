@@ -15,7 +15,7 @@ public class VehicleRepresentation
         {
             LogReport($"hookPDF");
             originalPDF = AccessTools.Method(typeof(BattleTech.VehicleRepresentation), "PlayDeathFloatie");
-            prefixPDF = AccessTools.Method(typeof(BattleTech.VehicleRepresentation), nameof(PrefixDeathFloatie));
+            prefixPDF = AccessTools.Method(typeof(VehicleRepresentation), nameof(PrefixDeathFloatie));
             PanicSystem.harmony.Patch(originalPDF, new HarmonyMethod(prefixPDF));
             //PanicSystem.harmony.Unpatch(originalPDF, HarmonyPatchType.Prefix);
         }
