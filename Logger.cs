@@ -31,7 +31,7 @@ namespace PanicSystem
             {
                 try
                 {
-                    string ts = DateTime.Now.ToString("s", System.Globalization.CultureInfo.InvariantCulture);
+                    string ts = DateTime.UtcNow.ToString("HH:mm:ss.ffff", System.Globalization.CultureInfo.InvariantCulture);
                     logStreamWriter.WriteLine($"REPORT {ts}: {line ?? "null"}");
                 }
                 catch (Exception exception)
