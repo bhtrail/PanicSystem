@@ -46,10 +46,15 @@ public class SavingThrows
             {
                 if (defender is Mech m)
                 {
-                    if (m.pilot.pilotDef.PilotTags.Contains("pilot_brave"))
+                    foreach (var kvp in modSettings.TagPanicModifiers)
                     {
-                        savingThrow -= modSettings.BraveModifier;
-                        LogReport($"{"Bravery",-20} | {modSettings.BraveModifier,10} | {savingThrow,10:F3}");
+                        string tag = kvp.Key;
+                        float modifier = kvp.Value;
+                        if (m.pilot.pilotDef.PilotTags.Contains(tag))
+                        {
+                            savingThrow -= modifier;
+                            LogReport($"{tag,-20} | {modifier,10} | {savingThrow,10:F3}");
+                        }
                     }
                 }
             }
@@ -58,7 +63,7 @@ public class SavingThrows
             float panicModifier = GetPanicModifier(TrackedActors[index].PanicStatus);
             savingThrow *= panicModifier;
             LogReport($"{"Panic multiplier",-20} | {panicModifier,10} | {savingThrow,10:F3}");
-            savingThrow = (float) Math.Max(0f, Math.Round(savingThrow));
+            savingThrow = (float)Math.Max(0f, Math.Round(savingThrow));
 
             if (savingThrow < 1)
             {
@@ -131,7 +136,7 @@ public class SavingThrows
         return false;
     }
 
-    public static float GetSavingThrow(AbstractActor defender, AbstractActor attacker,int heatDamage,float damageIncludingHeatDamage)
+    public static float GetSavingThrow(AbstractActor defender, AbstractActor attacker, int heatDamage, float damageIncludingHeatDamage)
     {
         var pilot = defender.GetPilot();
         var weapons = defender.Weapons;
@@ -146,17 +151,24 @@ public class SavingThrows
         {
             try
             {
-                if (modSettings.QuirksEnabled && attacker!=null &&
-                    attacker is Mech mech &&
-                    mech.MechDef.Chassis.ChassisTags.Contains("mech_quirk_distracting"))
+                if (modSettings.QuirksEnabled && attacker != null && attacker is Mech mech)
                 {
-                    totalMultiplier += modSettings.DistractingModifier;
-                    LogReport($"{"Distracting mech",-20} | {modSettings.DistractingModifier,10:F3} | {totalMultiplier,10:F3}");
+                    foreach (var kvp in modSettings.TagMechModifiers)
+                    {
+                        string tag = kvp.Key;
+                        float modifier = kvp.Value;
+                        if (mech.MechDef.Chassis.ChassisTags.Contains(tag) || mech.MechDef.MechTags.Contains(tag))
+                        {
+                            totalMultiplier += modifier;
+                            LogReport($"{tag,-20} | {modifier,10:F3} | {totalMultiplier,10:F3}");
+                        }
+                    }
                 }
 #if NO_CAC
                 if (modSettings.HeatDamageFactor > 0){
 #else
-                if (modSettings.HeatDamageFactor > 0 && defender.isHasHeat()) { 
+                if (modSettings.HeatDamageFactor > 0 && defender.isHasHeat())
+                {
 #endif
                     totalMultiplier += modSettings.HeatDamageFactor * heatDamage;
                     LogReport($"{$"Heat damage {heatDamage}",-20} | {modSettings.HeatDamageFactor * heatDamage,10:F3} | {totalMultiplier,10:F3}");
@@ -245,12 +257,13 @@ public class SavingThrows
 
                     totalMultiplier += modSettings.AloneModifier;
                     LogReport($"{"Alone",-20} | {modSettings.AloneModifier,10} | {totalMultiplier,10:F3}");
-                }else if(defendingMech.Combat.GetAllAlliesOf(defendingMech).Count()>0)
+                }
+                else if (defendingMech.Combat.GetAllAlliesOf(defendingMech).Count() > 0)
                 {
                     int alliesdead = defendingMech.Combat.GetAllAlliesOf(defendingMech).Where(m => m.IsDead).Count();
                     int alliestotal = defendingMech.Combat.GetAllAlliesOf(defendingMech).Count();
 
-                    totalMultiplier += modSettings.AloneModifier*alliesdead/alliestotal;
+                    totalMultiplier += modSettings.AloneModifier * alliesdead / alliestotal;
                     LogReport($"{$"Alone {alliesdead}/{alliestotal}",-20} | {modSettings.AloneModifier * alliesdead / alliestotal,10:F3} | {totalMultiplier,10:F3}");
                 }
             }
@@ -278,7 +291,7 @@ public class SavingThrows
         if (modSettings.VehiclesCanPanic &&
             defender is Vehicle defendingVehicle)
         {
-            
+
             float percentTurret = PercentTurret(defendingVehicle);
             if (percentTurret < 1)
             {
@@ -373,10 +386,15 @@ public class SavingThrows
 
         if (actor is Mech mech && modSettings.QuirksEnabled)
         {
-            if (mech.pilot.pilotDef.PilotTags.Contains("pilot_dependable"))
+            foreach (var kvp in modSettings.TagEjectModifiers)
             {
-                savingThrow -= modSettings.DependableModifier;
-                LogReport($"{"Dependable",-20} | {modSettings.DependableModifier,10} | {savingThrow,10:F3}");
+                string tag = kvp.Key;
+                float modifier = kvp.Value;
+                if (mech.pilot.pilotDef.PilotTags.Contains(tag))
+                {
+                    savingThrow -= modifier;
+                    LogReport($"{tag,-20} | {modifier,10} | {savingThrow,10:F3}");
+                }
             }
         }
 
@@ -393,7 +411,7 @@ public class SavingThrows
             LogReport($"{"Base ejection resist",-20} | {modSettings.BaseEjectionResist,10} | {savingThrow,10:F3}");
         }
 
-        savingThrow = (float) Math.Round(savingThrow);
+        savingThrow = (float)Math.Round(savingThrow);
         LogReport($"{"Eject multiplier",-20} | {modSettings.EjectChanceFactor,10} | {savingThrow,10:F3}");
         var roll = Random.Range(1, 100);
         LogReport(new string('-', 46));
@@ -408,7 +426,7 @@ public class SavingThrows
         }
 
         // cap the saving throw by the setting
-        savingThrow = (int) Math.Min(savingThrow, modSettings.MaxEjectChance);
+        savingThrow = (int)Math.Min(savingThrow, modSettings.MaxEjectChance);
 
         SaySpamFloatie(actor, $"{modSettings.PanicSpamSaveString}:{savingThrow}  {modSettings.PanicSpamRollString}:{roll}!");
         if (!modSettings.AlwaysPanic &&

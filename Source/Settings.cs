@@ -2,6 +2,8 @@
 // ReSharper disable ConvertToConstant.Global
 // ReSharper disable UnassignedField.Global
 
+using System.Collections.Generic;
+
 namespace PanicSystem;
 
 public class Settings
@@ -57,8 +59,7 @@ public class Settings
     public float PanickedToHitModifier;
     public float MedianResolve;
     public float VehicleResolveFactor;
-    public float ResolveMaxModifier;
-    public float DistractingModifier;
+    public float ResolveMaxModifier;    
     public float OverheatedModifier;
     public float ShutdownModifier;
     public float HeatDamageFactor;
@@ -72,8 +73,9 @@ public class Settings
 
     // Quirks
     public bool QuirksEnabled;
-    public float BraveModifier;
-    public float DependableModifier;
+    public Dictionary<string, float> TagPanicModifiers = new();
+    public Dictionary<string, float> TagEjectModifiers = new();
+    public Dictionary<string, float> TagMechModifiers = new();
 
     // ejection
     public float MaxEjectChance;
